@@ -138,3 +138,64 @@ PlayerTab:CreateButton({
       Tool.Parent = game.Players.LocalPlayer.Backpack
    end,
 })
+-- ✅ JUMP POWER SLIDER (working fix)
+PlayerTab:CreateSlider({
+   Name = "Jump Power",
+   Range = {50, 500},
+   Increment = 10,
+   Suffix = "Jump",
+   CurrentValue = 50,
+   Flag = "JumpSlider",
+   Callback = function(Value)
+      local plr = game.Players.LocalPlayer
+      local function applyJumpPower()
+         local hum = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
+         if hum then
+            hum.UseJumpPower = true
+            hum.JumpPower = Value
+         end
+      end
+
+      applyJumpPower()
+
+      -- Handle character reset
+      plr.CharacterAdded:Connect(function()
+         wait(0.5)
+         applyJumpPower()
+      end)
+   end,
+})
+
+-- ✅ TP TOOL BUTTON (fully working version)
+PlayerTab:CreateButton({
+   Name = "TP Tool",
+   Callback = function()
+      local Tool = Instance.new("Tool")
+      Tool.Name = "TP Tool"
+      Tool.RequiresHandle = false
+      Tool.CanBeDropped = false
+
+      local equipped = false
+
+      Tool.Equipped:Connect(function()
+         if equipped then return end
+         equipped = true
+
+         local mouse = game.Players.LocalPlayer:GetMouse()
+
+         mouse.Button1Down:Connect(function()
+            local char = game.Players.LocalPlayer.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+               hrp.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 5, 0))
+            end
+         end)
+      end)
+
+      Tool.Unequipped:Connect(function()
+         equipped = false
+      end)
+
+      Tool.Parent = game.Players.LocalPlayer.Backpack
+   end,
+})
