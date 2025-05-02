@@ -1,106 +1,136 @@
--- 2TuffCheats - Base Secure Menu Setup
-if game.CoreGui:FindFirstChild("2TuffCheats") then game.CoreGui["2TuffCheats"]:Destroy() end
+if game.CoreGui:FindFirstChild("2TuffMenu") then
+	game.CoreGui["2TuffMenu"]:Destroy()
+end
 
-local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local StarterGui = game:GetService("StarterGui")
+local TeleportService = game:GetService("TeleportService")
 local UserInputService = game:GetService("UserInputService")
 
--- Create main ScreenGui
-local gui = Instance.new("ScreenGui")
-gui.Name = "2TuffCheats"
-gui.ResetOnSpawn = false
-gui.Parent = CoreGui
+-- Password UI
+local passwordGui = Instance.new("ScreenGui", game.CoreGui)
+passwordGui.Name = "2TuffMenu"
+passwordGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Password Frame
-local pwFrame = Instance.new("Frame")
-pwFrame.Size = UDim2.new(0, 300, 0, 120)
-pwFrame.Position = UDim2.new(0.5, -150, 0.5, -60)
-pwFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-pwFrame.BorderSizePixel = 0
-pwFrame.Parent = gui
+local passwordFrame = Instance.new("Frame", passwordGui)
+passwordFrame.Size = UDim2.new(0, 300, 0, 150)
+passwordFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+passwordFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+passwordFrame.BorderSizePixel = 0
+passwordFrame.Active = true
+passwordFrame.Draggable = true
 
-local pwLabel = Instance.new("TextLabel")
-pwLabel.Size = UDim2.new(1, 0, 0.4, 0)
-pwLabel.Position = UDim2.new(0, 0, 0, 0)
-pwLabel.Text = "Enter Password"
-pwLabel.TextColor3 = Color3.new(1, 1, 1)
-pwLabel.BackgroundTransparency = 1
-pwLabel.Font = Enum.Font.GothamBold
-pwLabel.TextSize = 20
-pwLabel.Parent = pwFrame
+local passwordBox = Instance.new("TextBox", passwordFrame)
+passwordBox.Size = UDim2.new(0.8, 0, 0, 40)
+passwordBox.Position = UDim2.new(0.1, 0, 0.3, 0)
+passwordBox.PlaceholderText = "Enter Password"
+passwordBox.Text = ""
+passwordBox.TextSize = 20
+passwordBox.Font = Enum.Font.Gotham
+passwordBox.TextColor3 = Color3.new(1, 1, 1)
+passwordBox.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 
-local pwBox = Instance.new("TextBox")
-pwBox.Size = UDim2.new(0.9, 0, 0.3, 0)
-pwBox.Position = UDim2.new(0.05, 0, 0.45, 0)
-pwBox.PlaceholderText = "Password"
-pwBox.Text = ""
-pwBox.ClearTextOnFocus = false
-pwBox.TextColor3 = Color3.new(1,1,1)
-pwBox.BackgroundColor3 = Color3.fromRGB(30,30,30)
-pwBox.Font = Enum.Font.Gotham
-pwBox.TextSize = 18
-pwBox.Parent = pwFrame
-
-local submit = Instance.new("TextButton")
-submit.Size = UDim2.new(0.5, 0, 0.2, 0)
-submit.Position = UDim2.new(0.25, 0, 0.8, 0)
+local submit = Instance.new("TextButton", passwordFrame)
+submit.Size = UDim2.new(0.5, 0, 0, 30)
+submit.Position = UDim2.new(0.25, 0, 0.7, 0)
 submit.Text = "Submit"
+submit.TextColor3 = Color3.new(1, 1, 1)
+submit.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
 submit.Font = Enum.Font.GothamBold
-submit.TextSize = 18
-submit.TextColor3 = Color3.new(1,1,1)
-submit.BackgroundColor3 = Color3.fromRGB(65,105,225)
-submit.Parent = pwFrame
+submit.TextSize = 16
 
--- Menu Frame (starts hidden)
-local menuFrame = Instance.new("Frame")
-menuFrame.Size = UDim2.new(0, 400, 0, 300)
-menuFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
-menuFrame.BackgroundColor3 = Color3.fromRGB(10,10,10)
-menuFrame.BorderSizePixel = 0
-menuFrame.Visible = false
-menuFrame.Parent = gui
+-- Menu UI (initially hidden)
+local mainGui = Instance.new("ScreenGui", game.CoreGui)
+mainGui.Name = "MainMenu"
+mainGui.Enabled = false
 
-local menuTitle = Instance.new("TextLabel")
-menuTitle.Size = UDim2.new(1, 0, 0, 40)
-menuTitle.Text = "2TuffCheats"
-menuTitle.BackgroundColor3 = Color3.fromRGB(65,105,225)
-menuTitle.TextColor3 = Color3.new(1,1,1)
-menuTitle.Font = Enum.Font.GothamBold
-menuTitle.TextSize = 22
-menuTitle.Parent = menuFrame
+local mainFrame = Instance.new("Frame", mainGui)
+mainFrame.Size = UDim2.new(0, 400, 0, 300)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
 
--- Submit Password
+local titleLabel = Instance.new("TextLabel", mainFrame)
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.Text = "2Tuff Hub"
+titleLabel.TextColor3 = Color3.fromRGB(0, 150, 255)
+titleLabel.Font = Enum.Font.GothamSemibold
+titleLabel.TextSize = 22
+titleLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+
+-- TP TOOL BUTTON
+local tpButton = Instance.new("TextButton", mainFrame)
+tpButton.Size = UDim2.new(0.8, 0, 0, 40)
+tpButton.Position = UDim2.new(0.1, 0, 0.3, 0)
+tpButton.Text = "TP Tool"
+tpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+tpButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+tpButton.Font = Enum.Font.Gotham
+tpButton.TextSize = 18
+
+-- Rejoin Button
+local rejoinButton = Instance.new("TextButton", mainFrame)
+rejoinButton.Size = UDim2.new(0.8, 0, 0, 40)
+rejoinButton.Position = UDim2.new(0.1, 0, 0.5, 0)
+rejoinButton.Text = "Rejoin VC"
+rejoinButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+rejoinButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+rejoinButton.Font = Enum.Font.Gotham
+rejoinButton.TextSize = 18
+
+-- Greeting
+local greeting = Instance.new("TextLabel", mainGui)
+greeting.Size = UDim2.new(0, 200, 0, 50)
+greeting.Position = UDim2.new(0.5, -100, 0.2, 0)
+greeting.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+greeting.TextColor3 = Color3.new(1, 1, 1)
+greeting.Font = Enum.Font.GothamBold
+greeting.TextSize = 20
+greeting.Text = "Greetings slime."
+greeting.Visible = false
+
+-- Password Logic
 submit.MouseButton1Click:Connect(function()
-	if pwBox.Text == "miners69" then
-		pwFrame:Destroy()
-		menuFrame.Visible = true
+	if passwordBox.Text == "miners69" then
+		passwordGui:Destroy()
+		mainGui.Enabled = true
+		greeting.Visible = true
+		wait(2)
+		greeting:TweenPosition(UDim2.new(0.5, -100, 0.1, 0), "Out", "Quad", 1)
+		wait(1)
+		greeting:Destroy()
+	end
+end)
 
-		-- Greet the user
-		local greet = Instance.new("TextLabel")
-		greet.Size = UDim2.new(0, 200, 0, 50)
-		greet.Position = UDim2.new(0.5, -100, 0, -60)
-		greet.Text = "Greetings slime."
-		greet.TextColor3 = Color3.new(1,1,1)
-		greet.BackgroundColor3 = Color3.fromRGB(65,105,225)
-		greet.Font = Enum.Font.Gotham
-		greet.TextSize = 18
-		greet.Parent = gui
+-- Open/Close Menu With K
+UserInputService.InputBegan:Connect(function(input, gp)
+	if not gp and input.KeyCode == Enum.KeyCode.K then
+		mainGui.Enabled = not mainGui.Enabled
+	end
+end)
 
-		task.delay(2, function()
-			greet:Destroy()
+-- TP Tool logic
+tpButton.MouseButton1Click:Connect(function()
+	if not LocalPlayer.Backpack:FindFirstChild("TP Tool") then
+		local tool = Instance.new("Tool")
+		tool.RequiresHandle = false
+		tool.Name = "TP Tool"
+		tool.Parent = LocalPlayer.Backpack
+
+		tool.Activated:Connect(function()
+			local mouse = LocalPlayer:GetMouse()
+			if mouse then
+				LocalPlayer.Character:MoveTo(mouse.Hit.Position)
+			end
 		end)
-	else
-		pwBox.Text = ""
-		pwBox.PlaceholderText = "Wrong Password"
 	end
 end)
 
--- Toggle menu with K
-UserInputService.InputBegan:Connect(function(input, gpe)
-	if input.KeyCode == Enum.KeyCode.K and not gpe then
-		if menuFrame.Visible then
-			menuFrame.Visible = false
-		else
-			menuFrame.Visible = true
-		end
-	end
+-- Rejoin VC
+rejoinButton.MouseButton1Click:Connect(function()
+	TeleportService:Teleport(game.PlaceId, LocalPlayer)
 end)
+
