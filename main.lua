@@ -71,8 +71,8 @@ local function createMenu()
 
     local frame = Instance.new("Frame")
     frame.Name = "MainFrame"
-    frame.Size = UDim2.new(0, 500, 0, 400)  -- Menu size increased
-    frame.Position = UDim2.new(0.5, -250, 0.5, -200)
+    frame.Size = UDim2.new(0, 600, 0, 500)  -- Menu size increased
+    frame.Position = UDim2.new(0.5, -300, 0.5, -250)
     frame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
     frame.BorderSizePixel = 0
     frame.Visible = true
@@ -161,3 +161,4 @@ end
 
 -- Start the password input process
 createPasswordInput()
+
