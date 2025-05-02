@@ -75,7 +75,7 @@ local function createMenu()
     frame.Position = UDim2.new(0.5, -300, 0.5, -250)
     frame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
     frame.BorderSizePixel = 0
-    frame.Visible = true
+    frame.Visible = false  -- Start hidden
     frame.Parent = gui
 
     local title = Instance.new("TextLabel")
@@ -132,7 +132,7 @@ local function createMenu()
     -- Toggle menu visibility with K key
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if input.KeyCode == Enum.KeyCode.K and not gameProcessed then
-            frame.Visible = not frame.Visible
+            frame.Visible = not frame.Visible  -- Toggle visibility of the menu
         end
     end)
 
@@ -161,4 +161,5 @@ end
 
 -- Start the password input process
 createPasswordInput()
+
 
