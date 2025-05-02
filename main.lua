@@ -34,10 +34,10 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
--- PLAYER TAB
+-- Player Tab
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
--- ✅ SPEED SLIDER
+-- ✅ Speed Slider
 PlayerTab:CreateSlider({
    Name = "Speed",
    Range = {16, 500},
@@ -53,92 +53,7 @@ PlayerTab:CreateSlider({
    end,
 })
 
--- ✅ JUMP POWER SLIDER (fixed)
-PlayerTab:CreateSlider({
-   Name = "Jump Power",
-   Range = {50, 500},
-   Increment = 10,
-   Suffix = "Jump",
-   CurrentValue = 50,
-   Flag = "JumpSlider",
-   Callback = function(Value)
-      local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-      if hum then
-         hum.UseJumpPower = true
-         hum.JumpPower = Value
-      end
-   end,
-})
-
--- ✅ TELEPORT TO PLAYER (Fixed)
-local TeleportDropdown
-TeleportDropdown = PlayerTab:CreateDropdown({
-   Name = "Teleport To Player",
-   Options = {},
-   CurrentOption = nil,
-   Flag = "TPDropdown",
-   Callback = function(playerName)
-      local target = game.Players:FindFirstChild(playerName)
-      if not target then
-         Rayfield:Notify({ Title = "Teleport Failed", Content = "Player not found.", Duration = 3 })
-         return
-      end
-
-      local success, err = pcall(function()
-         local targetHRP = target.Character:WaitForChild("HumanoidRootPart", 3)
-         local myHRP = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-         if targetHRP and myHRP then
-            myHRP.CFrame = targetHRP.CFrame + Vector3.new(3, 0, 0)
-         else
-            Rayfield:Notify({ Title = "Teleport Failed", Content = "Target or self not fully loaded.", Duration = 3 })
-         end
-      end)
-
-      if not success then
-         Rayfield:Notify({ Title = "Teleport Error", Content = err, Duration = 3 })
-      end
-   end,
-})
-
--- ✅ UPDATE PLAYER LIST
-local function updatePlayerList()
-   local names = {}
-   for _, player in ipairs(game.Players:GetPlayers()) do
-      if player ~= game.Players.LocalPlayer then
-         table.insert(names, player.Name)
-      end
-   end
-   if TeleportDropdown then
-      TeleportDropdown:Refresh(names, true)
-   end
-end
-
-updatePlayerList()
-game.Players.PlayerAdded:Connect(updatePlayerList)
-game.Players.PlayerRemoving:Connect(updatePlayerList)
-
--- ✅ GIVE TP TOOL BUTTON
-PlayerTab:CreateButton({
-   Name = "Give TP Tool",
-   Callback = function()
-      local Tool = Instance.new("Tool")
-      Tool.Name = "TP Tool"
-      Tool.RequiresHandle = false
-      Tool.CanBeDropped = false
-
-      Tool.Activated:Connect(function()
-         local mouse = game.Players.LocalPlayer:GetMouse()
-         local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-         if hrp and mouse then
-            local pos = mouse.Hit.Position
-            hrp.CFrame = CFrame.new(pos + Vector3.new(0, 5, 0))
-         end
-      end)
-
-      Tool.Parent = game.Players.LocalPlayer.Backpack
-   end,
-})
--- ✅ JUMP POWER SLIDER (working fix)
+-- ✅ Jump Power Slider (fixed)
 PlayerTab:CreateSlider({
    Name = "Jump Power",
    Range = {50, 500},
@@ -157,8 +72,6 @@ PlayerTab:CreateSlider({
       end
 
       applyJumpPower()
-
-      -- Handle character reset
       plr.CharacterAdded:Connect(function()
          wait(0.5)
          applyJumpPower()
@@ -166,9 +79,9 @@ PlayerTab:CreateSlider({
    end,
 })
 
--- ✅ TP TOOL BUTTON (fully working version)
+-- ✅ Give TP Tool Button
 PlayerTab:CreateButton({
-   Name = "TP Tool",
+   Name = "Give TP Tool",
    Callback = function()
       local Tool = Instance.new("Tool")
       Tool.Name = "TP Tool"
@@ -199,3 +112,50 @@ PlayerTab:CreateButton({
       Tool.Parent = game.Players.LocalPlayer.Backpack
    end,
 })
+
+-- ✅ Teleport to Player Dropdown
+local TeleportDropdown
+TeleportDropdown = PlayerTab:CreateDropdown({
+   Name = "Teleport To Player",
+   Options = {},
+   CurrentOption = nil,
+   Flag = "TPDropdown",
+   Callback = function(playerName)
+      local plr = game.Players.LocalPlayer
+      local target = game.Players:FindFirstChild(playerName)
+      if not target then
+         Rayfield:Notify({ Title = "Teleport Failed", Content = "Player not found.", Duration = 3 })
+         return
+      end
+
+      local function tryTeleport()
+         local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+         local targetHRP = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+
+         if hrp and targetHRP then
+            hrp.CFrame = targetHRP.CFrame + Vector3.new(3, 0, 0)
+         else
+            Rayfield:Notify({ Title = "Teleport Failed", Content = "Character not ready.", Duration = 3 })
+         end
+      end
+
+      tryTeleport()
+   end,
+})
+
+-- ✅ Update Dropdown When Players Join/Leave
+local function updatePlayerList()
+   local names = {}
+   for _, player in ipairs(game.Players:GetPlayers()) do
+      if player ~= game.Players.LocalPlayer then
+         table.insert(names, player.Name)
+      end
+   end
+   if TeleportDropdown then
+      TeleportDropdown:Refresh(names, true)
+   end
+end
+
+updatePlayerList()
+game.Players.PlayerAdded:Connect(updatePlayerList)
+game.Players.PlayerRemoving:Connect(updatePlayerList)
