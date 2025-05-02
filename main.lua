@@ -5,7 +5,7 @@ local Window = Rayfield:CreateWindow({
    Icon = 0,
    LoadingTitle = "cheats brah",
    LoadingSubtitle = "by luc",
-   Theme = "RoyalBlue", -- ✅ Theme correctly set
+   Theme = "Default",
 
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false,
@@ -46,14 +46,14 @@ PlayerTab:CreateSlider({
    CurrentValue = 16,
    Flag = "SpeedSlider",
    Callback = function(Value)
-      local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-      if humanoid then
-         humanoid.WalkSpeed = Value
+      local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+      if hum then
+         hum.WalkSpeed = Value
       end
    end,
 })
 
--- ✅ JUMP POWER SLIDER
+-- ✅ JUMP POWER SLIDER (fixed)
 PlayerTab:CreateSlider({
    Name = "Jump Power",
    Range = {50, 500},
@@ -62,9 +62,10 @@ PlayerTab:CreateSlider({
    CurrentValue = 50,
    Flag = "JumpSlider",
    Callback = function(Value)
-      local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-      if humanoid then
-         humanoid.JumpPower = Value
+      local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+      if hum then
+         hum.UseJumpPower = true
+         hum.JumpPower = Value
       end
    end,
 })
@@ -78,22 +79,28 @@ TeleportDropdown = PlayerTab:CreateDropdown({
    Flag = "TPDropdown",
    Callback = function(playerName)
       local target = game.Players:FindFirstChild(playerName)
-      if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-         local myChar = game.Players.LocalPlayer.Character
-         if myChar and myChar:FindFirstChild("HumanoidRootPart") then
-            myChar.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(3, 0, 0)
+      if not target then
+         Rayfield:Notify({ Title = "Teleport Failed", Content = "Player not found.", Duration = 3 })
+         return
+      end
+
+      local success, err = pcall(function()
+         local targetHRP = target.Character:WaitForChild("HumanoidRootPart", 3)
+         local myHRP = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+         if targetHRP and myHRP then
+            myHRP.CFrame = targetHRP.CFrame + Vector3.new(3, 0, 0)
+         else
+            Rayfield:Notify({ Title = "Teleport Failed", Content = "Target or self not fully loaded.", Duration = 3 })
          end
-      else
-         Rayfield:Notify({
-            Title = "Teleport Failed",
-            Content = "Player not found or not fully loaded.",
-            Duration = 3
-         })
+      end)
+
+      if not success then
+         Rayfield:Notify({ Title = "Teleport Error", Content = err, Duration = 3 })
       end
    end,
 })
 
--- ✅ UPDATE PLAYER LIST DYNAMICALLY
+-- ✅ UPDATE PLAYER LIST
 local function updatePlayerList()
    local names = {}
    for _, player in ipairs(game.Players:GetPlayers()) do
@@ -109,3 +116,25 @@ end
 updatePlayerList()
 game.Players.PlayerAdded:Connect(updatePlayerList)
 game.Players.PlayerRemoving:Connect(updatePlayerList)
+
+-- ✅ GIVE TP TOOL BUTTON
+PlayerTab:CreateButton({
+   Name = "Give TP Tool",
+   Callback = function()
+      local Tool = Instance.new("Tool")
+      Tool.Name = "TP Tool"
+      Tool.RequiresHandle = false
+      Tool.CanBeDropped = false
+
+      Tool.Activated:Connect(function()
+         local mouse = game.Players.LocalPlayer:GetMouse()
+         local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+         if hrp and mouse then
+            local pos = mouse.Hit.Position
+            hrp.CFrame = CFrame.new(pos + Vector3.new(0, 5, 0))
+         end
+      end)
+
+      Tool.Parent = game.Players.LocalPlayer.Backpack
+   end,
+})
