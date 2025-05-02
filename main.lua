@@ -66,8 +66,6 @@ PlayerTab:CreateSlider({
       end)
    end,
 })
-
--- ✅ TP Tool Button
 PlayerTab:CreateButton({
    Name = "Give TP Tool",
    Callback = function()
@@ -100,8 +98,6 @@ PlayerTab:CreateButton({
       Tool.Parent = game.Players.LocalPlayer.Backpack
    end,
 })
-
--- ✅ Teleport to Player Dropdown (No Auto-Update)
 PlayerTab:CreateDropdown({
    Name = "Teleport To Player",
    Options = (function()
@@ -133,7 +129,7 @@ PlayerTab:CreateDropdown({
    end,
 })
 PlayerTab:CreateButton({
-   Name = "Infinite Zoom Out",
+   Name = "Infinite Zoom",
    Callback = function()
       local player = game.Players.LocalPlayer
       player.CameraMaxZoomDistance = math.huge  -- No limit
