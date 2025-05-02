@@ -6,22 +6,11 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "cheats brah",
    LoadingSubtitle = "by luc",
    Theme = "Default",
-
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false,
-
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil,
       FileName = "2tuff cheats"
    },
-
-   Discord = {
-      Enabled = false,
-      Invite = "noinvitelink",
-      RememberJoins = true
-   },
-
    KeySystem = true,
    KeySettings = {
       Title = "Untitled",
@@ -53,7 +42,7 @@ PlayerTab:CreateSlider({
    end,
 })
 
--- ✅ Jump Power Slider (fixed)
+-- ✅ Jump Power Slider
 PlayerTab:CreateSlider({
    Name = "Jump Power",
    Range = {50, 500},
@@ -70,7 +59,6 @@ PlayerTab:CreateSlider({
             hum.JumpPower = Value
          end
       end
-
       applyJumpPower()
       plr.CharacterAdded:Connect(function()
          wait(0.5)
@@ -79,7 +67,7 @@ PlayerTab:CreateSlider({
    end,
 })
 
--- ✅ Give TP Tool Button
+-- ✅ TP Tool Button
 PlayerTab:CreateButton({
    Name = "Give TP Tool",
    Callback = function()
@@ -113,11 +101,18 @@ PlayerTab:CreateButton({
    end,
 })
 
--- ✅ Teleport to Player Dropdown
-local TeleportDropdown
-TeleportDropdown = PlayerTab:CreateDropdown({
+-- ✅ Teleport to Player Dropdown (No Auto-Update)
+PlayerTab:CreateDropdown({
    Name = "Teleport To Player",
-   Options = {},
+   Options = (function()
+      local list = {}
+      for _, p in ipairs(game.Players:GetPlayers()) do
+         if p ~= game.Players.LocalPlayer then
+            table.insert(list, p.Name)
+         end
+      end
+      return list
+   end)(),
    CurrentOption = nil,
    Flag = "TPDropdown",
    Callback = function(playerName)
@@ -128,34 +123,13 @@ TeleportDropdown = PlayerTab:CreateDropdown({
          return
       end
 
-      local function tryTeleport()
-         local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-         local targetHRP = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
-
-         if hrp and targetHRP then
-            hrp.CFrame = targetHRP.CFrame + Vector3.new(3, 0, 0)
-         else
-            Rayfield:Notify({ Title = "Teleport Failed", Content = "Character not ready.", Duration = 3 })
-         end
+      local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+      local targetHRP = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+      if hrp and targetHRP then
+         hrp.CFrame = targetHRP.CFrame + Vector3.new(3, 0, 0)
+      else
+         Rayfield:Notify({ Title = "Teleport Failed", Content = "Character not ready.", Duration = 3 })
       end
-
-      tryTeleport()
    end,
 })
 
--- ✅ Update Dropdown When Players Join/Leave
-local function updatePlayerList()
-   local names = {}
-   for _, player in ipairs(game.Players:GetPlayers()) do
-      if player ~= game.Players.LocalPlayer then
-         table.insert(names, player.Name)
-      end
-   end
-   if TeleportDropdown then
-      TeleportDropdown:Refresh(names, true)
-   end
-end
-
-updatePlayerList()
-game.Players.PlayerAdded:Connect(updatePlayerList)
-game.Players.PlayerRemoving:Connect(updatePlayerList)
