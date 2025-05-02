@@ -1,133 +1,151 @@
--- Password System (Prompt Before Anything Else)
-local password = "miners69"
-local enteredPassword = ""
-local passwordBox = Instance.new("TextBox")
-passwordBox.Position = UDim2.new(0.5, -100, 0.5, -120)
-passwordBox.Size = UDim2.new(0, 200, 0, 50)
-passwordBox.Text = ""
-passwordBox.PlaceholderText = "Enter Password"
-passwordBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-passwordBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-passwordBox.Font = Enum.Font.Gotham
-passwordBox.TextSize = 16
-passwordBox.Parent = game.CoreGui
+-- Password Input Check (before everything else)
+local password = "miners69" -- Set the password here
+local enteredPassword = nil
 
-local passwordCorrect = false
+-- Create the password input window
+local function createPasswordInput()
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "PasswordInput"
+    gui.Parent = game.CoreGui
+    gui.ResetOnSpawn = false
 
-passwordBox.FocusLost:Connect(function(enterPressed)
-    if enterPressed and passwordBox.Text == password then
-        print("Password Correct!")
-        passwordBox.Visible = false  -- Hide password box after entering correct password
-        passwordCorrect = true
-    else
-        print("Incorrect Password")
-    end
-end)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 400, 0, 300)
+    frame.Position = UDim2.new(0.5, -200, 0.5, -150)
+    frame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+    frame.BorderSizePixel = 0
+    frame.Parent = gui
 
--- Wait until password is correct to proceed
-while not passwordCorrect do
-    wait(0.1)
+    local title = Instance.new("TextLabel")
+    title.Text = "Enter Password"
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.BackgroundColor3 = Color3.fromRGB(65, 105, 225)
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 24
+    title.Parent = frame
+
+    local inputField = Instance.new("TextBox")
+    inputField.Size = UDim2.new(0, 300, 0, 40)
+    inputField.Position = UDim2.new(0.5, -150, 0.5, -60)
+    inputField.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    inputField.TextColor3 = Color3.fromRGB(0, 0, 0)
+    inputField.ClearTextOnFocus = true
+    inputField.Font = Enum.Font.Gotham
+    inputField.TextSize = 20
+    inputField.Parent = frame
+
+    local submitButton = Instance.new("TextButton")
+    submitButton.Text = "Submit"
+    submitButton.Size = UDim2.new(0, 150, 0, 40)
+    submitButton.Position = UDim2.new(0.5, -75, 0.5, 60)
+    submitButton.BackgroundColor3 = Color3.fromRGB(65, 105, 225)
+    submitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    submitButton.Font = Enum.Font.GothamBold
+    submitButton.TextSize = 18
+    submitButton.Parent = frame
+
+    submitButton.MouseButton1Click:Connect(function()
+        enteredPassword = inputField.Text
+        if enteredPassword == password then
+            -- Close password input window
+            gui:Destroy()
+            createMenu()
+        else
+            -- Incorrect password warning
+            print("Incorrect password!")
+        end
+    end)
 end
 
--- Now we proceed with the menu and other features after password is correct
+-- Menu Creation after Password Validation
+local function createMenu()
+    print("💀 2TuffCheats loaded. Stay sharp.")
 
-print("2TuffCheats loaded. Stay sharp.")
+    local UserInputService = game:GetService("UserInputService")
 
-local UserInputService = game:GetService("UserInputService")
-local gui = Instance.new("ScreenGui")
-gui.Name = "2TuffCheats"
-gui.Parent = game.CoreGui
-gui.ResetOnSpawn = false
+    -- GUI Setup
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "2TuffCheats"
+    gui.Parent = game.CoreGui
+    gui.ResetOnSpawn = false
 
-local frame = Instance.new("Frame")
-frame.Name = "MainFrame"
-frame.Size = UDim2.new(0, 500, 0, 400)
-frame.Position = UDim2.new(0.5, -250, 0.5, -200)
-frame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-frame.BorderSizePixel = 0
-frame.Visible = true
-frame.Parent = gui
+    local frame = Instance.new("Frame")
+    frame.Name = "MainFrame"
+    frame.Size = UDim2.new(0, 400, 0, 300)
+    frame.Position = UDim2.new(0.5, -200, 0.5, -150)
+    frame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+    frame.BorderSizePixel = 0
+    frame.Visible = true
+    frame.Parent = gui
 
-local title = Instance.new("TextLabel")
-title.Text = "2TuffCheats Menu"
-title.Size = UDim2.new(1, 0, 0, 40)
-title.BackgroundColor3 = Color3.fromRGB(65, 105, 225)
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 20
-title.Parent = frame
+    local title = Instance.new("TextLabel")
+    title.Text = "2TuffCheats Menu"
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.BackgroundColor3 = Color3.fromRGB(65, 105, 225)
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 24
+    title.Parent = frame
 
--- Teleport Tool Button (Royal Blue)
-local teleportToolButton = Instance.new("TextButton")
-teleportToolButton.Size = UDim2.new(0, 280, 0, 40)
-teleportToolButton.Position = UDim2.new(0.5, -140, 0.2, 0)  -- Below title
-teleportToolButton.Text = "TP Tool"
-teleportToolButton.Font = Enum.Font.GothamBold
-teleportToolButton.TextSize = 16
-teleportToolButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-teleportToolButton.BackgroundColor3 = Color3.fromRGB(65, 105, 225)  -- Royal Blue
-teleportToolButton.BorderSizePixel = 0
-teleportToolButton.Parent = frame
+    -- Teleport Tool Button
+    local tpButton = Instance.new("TextButton")
+    tpButton.Text = "Teleport Tool"
+    tpButton.Size = UDim2.new(0, 350, 0, 40)
+    tpButton.Position = UDim2.new(0.5, -175, 0.5, 0)
+    tpButton.BackgroundColor3 = Color3.fromRGB(65, 105, 225)
+    tpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    tpButton.Font = Enum.Font.GothamBold
+    tpButton.TextSize = 18
+    tpButton.Parent = frame
 
--- Teleport Tool Functionality
-teleportToolButton.MouseButton1Click:Connect(function()
-    local tool = Instance.new("Tool")
-    tool.Name = "TeleportTool"
-    tool.RequiresHandle = false
-    tool.Parent = game.Players.LocalPlayer.Backpack
-
-    tool.Activated:Connect(function()
+    -- Teleport tool activation
+    tpButton.MouseButton1Click:Connect(function()
+        local tpToolActivated = true
         local mouse = game.Players.LocalPlayer:GetMouse()
-        local targetPos = mouse.Hit.p
-        game.Players.LocalPlayer.Character:MoveTo(targetPos)
+
+        mouse.Button1Down:Connect(function()
+            if tpToolActivated then
+                local targetPosition = mouse.Hit.p
+                game.Players.LocalPlayer.Character:MoveTo(targetPosition)
+            end
+        end)
     end)
-end)
 
--- Make Menu Moveable (Drag the Menu)
-local dragging = false
-local dragInput, dragStart, startPos
+    -- Toggle visibility with K key
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if input.KeyCode == Enum.KeyCode.K and not gameProcessed then
+            frame.Visible = not frame.Visible
+            -- Smooth hide transition
+            if not frame.Visible then
+                frame.Position = UDim2.new(0.5, -200, 0.5, -350)
+            end
+        end
+    end)
 
-frame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = frame.Position
-    end
-end)
+    -- Make the menu draggable
+    local dragging, dragInput, dragStart, startPos
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
 
-frame.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
+    frame.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
 
-frame.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
+-- Start the password input process
+createPasswordInput()
 
--- Close Button
-local closeButton = Instance.new("TextButton")
-closeButton.Size = UDim2.new(0, 100, 0, 40)
-closeButton.Position = UDim2.new(0.5, -50, 1, -50)
-closeButton.Text = "Close"
-closeButton.Font = Enum.Font.GothamBold
-closeButton.TextSize = 16
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-closeButton.BorderSizePixel = 0
-closeButton.Parent = frame
-
-closeButton.MouseButton1Click:Connect(function()
-    frame.Visible = false
-end)
-
--- Smooth Transition When Closing
-frame.Visible = false
-frame.Position = UDim2.new(0.5, -250, 0.5, -200)
-
--- Smooth Transition When Opening
-local openFrameTween = game:GetService("TweenService"):Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -250, 0.5, -200), Visible = true})
-openFrameTween:Play()
