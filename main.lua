@@ -1,8 +1,35 @@
--- Existing Code for Menu GUI and Basic Setup (keep this part)
+-- Password System (Prompt Before Anything Else)
+local password = "miners69"
+local enteredPassword = ""
+local passwordBox = Instance.new("TextBox")
+passwordBox.Position = UDim2.new(0.5, -100, 0.5, -120)
+passwordBox.Size = UDim2.new(0, 200, 0, 50)
+passwordBox.Text = ""
+passwordBox.PlaceholderText = "Enter Password"
+passwordBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+passwordBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+passwordBox.Font = Enum.Font.Gotham
+passwordBox.TextSize = 16
+passwordBox.Parent = game.CoreGui
 
-if game.CoreGui:FindFirstChild("2TuffCheats") then
-    game.CoreGui["2TuffCheats"]:Destroy()
+local passwordCorrect = false
+
+passwordBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed and passwordBox.Text == password then
+        print("Password Correct!")
+        passwordBox.Visible = false  -- Hide password box after entering correct password
+        passwordCorrect = true
+    else
+        print("Incorrect Password")
+    end
+end)
+
+-- Wait until password is correct to proceed
+while not passwordCorrect do
+    wait(0.1)
 end
+
+-- Now we proceed with the menu and other features after password is correct
 
 print("2TuffCheats loaded. Stay sharp.")
 
@@ -30,44 +57,19 @@ title.Font = Enum.Font.GothamBold
 title.TextSize = 20
 title.Parent = frame
 
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if input.KeyCode == Enum.KeyCode.K and not gameProcessed then
-        frame.Visible = not frame.Visible
-    end
-end)
-
--- Password System
-local password = "miners69"
-local enteredPassword = ""
-local passwordBox = Instance.new("TextBox")
-passwordBox.Position = UDim2.new(0.5, -100, 0.5, -120)
-passwordBox.Size = UDim2.new(0, 200, 0, 50)
-passwordBox.Text = ""
-passwordBox.PlaceholderText = "Enter Password"
-passwordBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-passwordBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-passwordBox.Parent = frame
-
-passwordBox.FocusLost:Connect(function(enterPressed)
-    if enterPressed and passwordBox.Text == password then
-        print("Password Correct!")
-        passwordBox.Visible = false  -- Hide password box after entering correct password
-    else
-        print("Incorrect Password")
-    end
-end)
-
--- Teleport Tool
+-- Teleport Tool Button (Royal Blue)
 local teleportToolButton = Instance.new("TextButton")
 teleportToolButton.Size = UDim2.new(0, 280, 0, 40)
-teleportToolButton.Text = "Teleport Tool"
+teleportToolButton.Position = UDim2.new(0.5, -140, 0.2, 0)  -- Below title
+teleportToolButton.Text = "TP Tool"
 teleportToolButton.Font = Enum.Font.GothamBold
 teleportToolButton.TextSize = 16
 teleportToolButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-teleportToolButton.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+teleportToolButton.BackgroundColor3 = Color3.fromRGB(65, 105, 225)  -- Royal Blue
 teleportToolButton.BorderSizePixel = 0
 teleportToolButton.Parent = frame
 
+-- Teleport Tool Functionality
 teleportToolButton.MouseButton1Click:Connect(function()
     local tool = Instance.new("Tool")
     tool.Name = "TeleportTool"
@@ -81,7 +83,7 @@ teleportToolButton.MouseButton1Click:Connect(function()
     end)
 end)
 
--- Make Menu Moveable (dragging)
+-- Make Menu Moveable (Drag the Menu)
 local dragging = false
 local dragInput, dragStart, startPos
 
@@ -106,7 +108,7 @@ frame.InputEnded:Connect(function(input)
     end
 end)
 
--- Close Button (Optional)
+-- Close Button
 local closeButton = Instance.new("TextButton")
 closeButton.Size = UDim2.new(0, 100, 0, 40)
 closeButton.Position = UDim2.new(0.5, -50, 1, -50)
@@ -122,4 +124,10 @@ closeButton.MouseButton1Click:Connect(function()
     frame.Visible = false
 end)
 
+-- Smooth Transition When Closing
+frame.Visible = false
+frame.Position = UDim2.new(0.5, -250, 0.5, -200)
 
+-- Smooth Transition When Opening
+local openFrameTween = game:GetService("TweenService"):Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -250, 0.5, -200), Visible = true})
+openFrameTween:Play()
