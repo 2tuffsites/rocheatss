@@ -132,32 +132,10 @@ PlayerTab:CreateDropdown({
       end
    end,
 })
--- ✅ Infinite Camera Zoom Toggle
 local cameraZoomEnabled = false
 
 PlayerTab:CreateButton({
-   Name = "Toggle Infinite Camera Zoom",
-   Callback = function()
-      cameraZoomEnabled = not cameraZoomEnabled
-
-      local camera = game.Workspace.CurrentCamera
-      if cameraZoomEnabled then
-         -- Enable infinite camera zoom
-         camera.FieldOfView = 120  -- Set a very high FOV for zooming out effect
-         camera.CameraType = Enum.CameraType.Scriptable
-         camera.CFrame = camera.CFrame * CFrame.new(0, 0, -10000)  -- Move the camera far back
-      else
-         -- Restore normal camera behavior
-         camera.CameraType = Enum.CameraType.Custom
-         camera.FieldOfView = 70  -- Default FOV
-      end
-   end,
-})
--- ✅ Infinite Camera Zoom Toggle
-local cameraZoomEnabled = false
-
-PlayerTab:CreateButton({
-   Name = "Toggle Infinite Camera Zoom",
+   Name = "Infinite Camera Zoom",
    Callback = function()
       cameraZoomEnabled = not cameraZoomEnabled
 
