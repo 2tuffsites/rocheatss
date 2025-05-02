@@ -133,4 +133,3 @@ end)
 rejoinButton.MouseButton1Click:Connect(function()
 	TeleportService:Teleport(game.PlaceId, LocalPlayer)
 end)
-
