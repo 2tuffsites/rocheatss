@@ -189,4 +189,167 @@ sampleButton.BorderRadius = UDim.new(0, 10)
 sampleButton.MouseButton1Click:Connect(function()
     -- Add functionality here (like teleport or other features)
 end)
+-- Create the main UI Frame
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local menuFrame = Instance.new("Frame")
+menuFrame.Parent = screenGui
+menuFrame.Size = UDim2.new(0.5, 0, 0.7, 0)  -- 50% width, 70% height
+menuFrame.Position = UDim2.new(0.25, 0, 0.15, 0)  -- Centered on screen
+menuFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 255)  -- Royal blue
+menuFrame.BackgroundTransparency = 0.2  -- Slight transparency
+menuFrame.BorderRadius = UDim.new(0, 20)  -- Rounded corners
+menuFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+-- Add a title label
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Parent = menuFrame
+titleLabel.Text = "2TuffCheats"
+titleLabel.Size = UDim2.new(1, 0, 0.1, 0)
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+titleLabel.TextSize = 30
+titleLabel.TextFont = Enum.Font.GothamBold
+titleLabel.BackgroundTransparency = 1
+titleLabel.TextStrokeTransparency = 0.6  -- Slight text stroke for better readability
+
+-- Add a close button
+local closeButton = Instance.new("TextButton")
+closeButton.Parent = menuFrame
+closeButton.Size = UDim2.new(0.2, 0, 0.1, 0)
+closeButton.Position = UDim2.new(1, -30, 0, 10)  -- Top-right corner
+closeButton.Text = "Close"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 20
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red background
+closeButton.BorderRadius = UDim.new(0, 10)
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()  -- Close the menu when clicked
+end)
+
+-- Smooth transition effect (fade in the menu frame)
+menuFrame.BackgroundTransparency = 1
+game:GetService("TweenService"):Create(menuFrame, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.2}):Play()
+
+-- Add a simple button (like for password input, teleport, or voice chat)
+local sampleButton = Instance.new("TextButton")
+sampleButton.Parent = menuFrame
+sampleButton.Size = UDim2.new(0.8, 0, 0.1, 0)
+sampleButton.Position = UDim2.new(0.1, 0, 0.2, 0)
+sampleButton.Text = "Sample Feature"
+sampleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+sampleButton.TextSize = 20
+sampleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 200)  -- Slightly darker blue for contrast
+sampleButton.BorderRadius = UDim.new(0, 10)
+sampleButton.MouseButton1Click:Connect(function()
+    -- Add functionality here (like teleport or other features)
+end)
+-- Create the main UI Frame
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local menuFrame = Instance.new("Frame")
+menuFrame.Parent = screenGui
+menuFrame.Size = UDim2.new(0.5, 0, 0.7, 0)  -- 50% width, 70% height
+menuFrame.Position = UDim2.new(0.25, 0, 0.15, 0)  -- Centered on screen
+menuFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 255)  -- Royal blue
+menuFrame.BackgroundTransparency = 0.2  -- Slight transparency
+menuFrame.BorderRadius = UDim.new(0, 20)  -- Rounded corners
+menuFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+-- Add a title label
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Parent = menuFrame
+titleLabel.Text = "2TuffCheats"
+titleLabel.Size = UDim2.new(1, 0, 0.1, 0)
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+titleLabel.TextSize = 30
+titleLabel.TextFont = Enum.Font.GothamBold
+titleLabel.BackgroundTransparency = 1
+titleLabel.TextStrokeTransparency = 0.6  -- Slight text stroke for better readability
+
+-- Add a close button
+local closeButton = Instance.new("TextButton")
+closeButton.Parent = menuFrame
+closeButton.Size = UDim2.new(0.2, 0, 0.1, 0)
+closeButton.Position = UDim2.new(1, -30, 0, 10)  -- Top-right corner
+closeButton.Text = "Close"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 20
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red background
+closeButton.BorderRadius = UDim.new(0, 10)
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()  -- Close the menu when clicked
+end)
+
+-- Smooth transition effect (fade in the menu frame)
+menuFrame.BackgroundTransparency = 1
+game:GetService("TweenService"):Create(menuFrame, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.2}):Play()
+
+-- Rejoin VC button
+local rejoinVCButton = Instance.new("TextButton")
+rejoinVCButton.Parent = menuFrame
+rejoinVCButton.Size = UDim2.new(0.8, 0, 0.1, 0)
+rejoinVCButton.Position = UDim2.new(0.1, 0, 0.2, 0)
+rejoinVCButton.Text = "Rejoin Voice Chat"
+rejoinVCButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+rejoinVCButton.TextSize = 20
+rejoinVCButton.BackgroundColor3 = Color3.fromRGB(0, 0, 200)  -- Slightly darker blue for contrast
+rejoinVCButton.BorderRadius = UDim.new(0, 10)
+rejoinVCButton.MouseButton1Click:Connect(function()
+    -- Add your code to rejoin VC here
+end)
+
+-- Teleport to Player button
+local tpToPlayerButton = Instance.new("TextButton")
+tpToPlayerButton.Parent = menuFrame
+tpToPlayerButton.Size = UDim2.new(0.8, 0, 0.1, 0)
+tpToPlayerButton.Position = UDim2.new(0.1, 0, 0.35, 0)  -- Below Rejoin VC button
+tpToPlayerButton.Text = "Teleport to Player"
+tpToPlayerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+tpToPlayerButton.TextSize = 20
+tpToPlayerButton.BackgroundColor3 = Color3.fromRGB(0, 0, 200)  -- Slightly darker blue for contrast
+tpToPlayerButton.BorderRadius = UDim.new(0, 10)
+
+tpToPlayerButton.MouseButton1Click:Connect(function()
+    local playerList = game.Players:GetPlayers()
+    local playerNames = {}
+    for _, player in pairs(playerList) do
+        table.insert(playerNames, player.Name)
+    end
+
+    -- Display list of players to teleport to
+    local selectionBox = Instance.new("Frame")
+    selectionBox.Parent = menuFrame
+    selectionBox.Size = UDim2.new(0.8, 0, 0.3, 0)
+    selectionBox.Position = UDim2.new(0.1, 0, 0.5, 0)
+    selectionBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    selectionBox.BorderRadius = UDim.new(0, 10)
+    
+    local playerListUI = Instance.new("UIListLayout")
+    playerListUI.Parent = selectionBox
+    
+    for _, name in pairs(playerNames) do
+        local playerButton = Instance.new("TextButton")
+        playerButton.Parent = selectionBox
+        playerButton.Size = UDim2.new(1, 0, 0, 30)
+        playerButton.Text = name
+        playerButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+        playerButton.TextSize = 18
+        playerButton.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+        playerButton.BorderRadius = UDim.new(0, 10)
+        
+        playerButton.MouseButton1Click:Connect(function()
+            -- Teleport to selected player
+            local selectedPlayer = game.Players:FindFirstChild(name)
+            if selectedPlayer and selectedPlayer.Character then
+                game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(selectedPlayer.Character.HumanoidRootPart.CFrame)
+                selectionBox:Destroy()  -- Close the player list
+            end
+        end)
+    end
+end)
+
 
