@@ -99,34 +99,84 @@ PlayerTab:CreateButton({
    end,
 })
 PlayerTab:CreateDropdown({
-   Name = "Teleport To Player",
-   Options = (function()
-      local list = {}
-      for _, p in ipairs(game.Players:GetPlayers()) do
-         if p ~= game.Players.LocalPlayer then
-            table.insert(list, p.Name)
-         end
-      end
-      return list
-   end)(),
-   CurrentOption = nil,
-   Flag = "TPDropdown",
-   Callback = function(playerName)
-      local plr = game.Players.LocalPlayer
-      local target = game.Players:FindFirstChild(playerName)
-      if not target then
-         Rayfield:Notify({ Title = "Teleport Failed", Content = "Player not found.", Duration = 3 })
-         return
-      end
+local tpDropdown -- store reference so we can set new options
 
-      local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-      local targetHRP = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
-      if hrp and targetHRP then
-         hrp.CFrame = targetHRP.CFrame + Vector3.new(3, 0, 0)
-      else
-         Rayfield:Notify({ Title = "Teleport Failed", Content = "Character not ready.", Duration = 3 })
-      end
-   end,
+tpDropdown = PlayerTab:CreateDropdown({
+    Name = "Teleport To Player",
+    Options = {}, -- start empty
+    CurrentOption = nil,
+    Flag = "TPDropdown",
+    Callback = function(playerName)
+        local localPlr = game.Players.LocalPlayer
+        local target = game.Players:FindFirstChild(playerName)
+
+        if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+            local localHRP = localPlr.Character and localPlr.Character:FindFirstChild("HumanoidRootPart")
+            if localHRP then
+                localHRP.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(3, 0, 0)
+            else
+                Rayfield:Notify({
+                    Title = "Teleport Failed",
+                    Content = "Your character isn't ready.",
+                    Duration = 3
+                })
+            end
+        else
+            Rayfield:Notify({
+                Title = "Teleport Failed",
+                Content = "Target player not available.",
+                Duration = 3
+            })
+        end
+    end
+})
+
+-- Auto-update player list when dropdown is opened
+tpDropdown:SetOptions(
+    (function()
+        local list = {}
+        for _, p in ipairs(game.Players:GetPlayers()) do
+            if p ~= game.Players.LocalPlayer then
+                table.insert(list, p.Name)
+            end
+        end
+        return list
+    end)()
+)
+
+-- Refresh list when any player joins/leaves
+game.Players.PlayerAdded:Connect(function()
+    if tpDropdown then
+        tpDropdown:SetOptions(
+            (function()
+                local list = {}
+                for _, p in ipairs(game.Players:GetPlayers()) do
+                    if p ~= game.Players.LocalPlayer then
+                        table.insert(list, p.Name)
+                    end
+                end
+                return list
+            end)()
+        )
+    end
+end)
+
+game.Players.PlayerRemoving:Connect(function()
+    if tpDropdown then
+        tpDropdown:SetOptions(
+            (function()
+                local list = {}
+                for _, p in ipairs(game.Players:GetPlayers()) do
+                    if p ~= game.Players.LocalPlayer then
+                        table.insert(list, p.Name)
+                    end
+                end
+                return list
+            end)()
+        )
+    end
+end)
+
 })
 PlayerTab:CreateButton({
    Name = "Infinite Zoom",
