@@ -1,5 +1,5 @@
-if game.CoreGui:FindFirstChild("2TuffMenu") then
-	game.CoreGui["2TuffMenu"]:Destroy()
+if game.CoreGui:FindFirstChild("2Tuff") then
+	game.CoreGui["2Tuff"]:Destroy()
 end
 
 local Players = game:GetService("Players")
