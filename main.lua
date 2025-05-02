@@ -133,3 +133,60 @@ end)
 rejoinButton.MouseButton1Click:Connect(function()
 	TeleportService:Teleport(game.PlaceId, LocalPlayer)
 end)
+-- Create the main UI Frame
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local menuFrame = Instance.new("Frame")
+menuFrame.Parent = screenGui
+menuFrame.Size = UDim2.new(0.5, 0, 0.7, 0)  -- 50% width, 70% height
+menuFrame.Position = UDim2.new(0.25, 0, 0.15, 0)  -- Centered on screen
+menuFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 255)  -- Royal blue
+menuFrame.BackgroundTransparency = 0.2  -- Slight transparency
+menuFrame.BorderRadius = UDim.new(0, 20)  -- Rounded corners
+menuFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+-- Add a title label
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Parent = menuFrame
+titleLabel.Text = "2TuffCheats"
+titleLabel.Size = UDim2.new(1, 0, 0.1, 0)
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+titleLabel.TextSize = 30
+titleLabel.TextFont = Enum.Font.GothamBold
+titleLabel.BackgroundTransparency = 1
+titleLabel.TextStrokeTransparency = 0.6  -- Slight text stroke for better readability
+
+-- Add a close button
+local closeButton = Instance.new("TextButton")
+closeButton.Parent = menuFrame
+closeButton.Size = UDim2.new(0.2, 0, 0.1, 0)
+closeButton.Position = UDim2.new(1, -30, 0, 10)  -- Top-right corner
+closeButton.Text = "Close"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 20
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red background
+closeButton.BorderRadius = UDim.new(0, 10)
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()  -- Close the menu when clicked
+end)
+
+-- Smooth transition effect (fade in the menu frame)
+menuFrame.BackgroundTransparency = 1
+game:GetService("TweenService"):Create(menuFrame, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.2}):Play()
+
+-- Add a simple button (like for password input, teleport, or voice chat)
+local sampleButton = Instance.new("TextButton")
+sampleButton.Parent = menuFrame
+sampleButton.Size = UDim2.new(0.8, 0, 0.1, 0)
+sampleButton.Position = UDim2.new(0.1, 0, 0.2, 0)
+sampleButton.Text = "Sample Feature"
+sampleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+sampleButton.TextSize = 20
+sampleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 200)  -- Slightly darker blue for contrast
+sampleButton.BorderRadius = UDim.new(0, 10)
+sampleButton.MouseButton1Click:Connect(function()
+    -- Add functionality here (like teleport or other features)
+end)
+
