@@ -44,7 +44,6 @@ local Slider = Tab:CreateSlider({
    -- The function that takes place when the slider changes
    -- The variable (Value) is a number which correlates to the value the slider is currently at
    end,
-})game.Players.LocalPlayer.Character:SetAttribute(SpeedMultiplier,Value)
-end
+})
 
    
