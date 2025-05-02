@@ -26,7 +26,7 @@ local Window = Rayfield:CreateWindow({
 -- Player Tab
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
--- ✅ Speed Slider
+-- Speed Slider
 PlayerTab:CreateSlider({
    Name = "Speed",
    Range = {16, 500},
@@ -42,7 +42,7 @@ PlayerTab:CreateSlider({
    end,
 })
 
--- ✅ Jump Power Slider
+-- Jump Power Slider
 PlayerTab:CreateSlider({
    Name = "Jump Power",
    Range = {50, 500},
@@ -66,6 +66,8 @@ PlayerTab:CreateSlider({
       end)
    end,
 })
+
+-- Give TP Tool
 PlayerTab:CreateButton({
    Name = "Give TP Tool",
    Callback = function()
@@ -98,12 +100,57 @@ PlayerTab:CreateButton({
       Tool.Parent = game.Players.LocalPlayer.Backpack
    end,
 })
-PlayerTab:CreateDropdown({
-local tpDropdown -- store reference so we can set new options
+
+-- Teleport To Player Dropdown (auto-updating)
+local tpDropdown = PlayerTab:CreateDropdown({
+   Name = "Teleport To Player",
+   Options = {},
+   CurrentOption = nil,
+   Flag = "TPDropdown",
+   Callback = function(playerName)
+      local localPlr = game.Players.LocalPlayer
+      local target = game.Players:FindFirstChild(playerName)
+
+      if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+         local hrp = localPlr.Character and localPlr.Character:FindFirstChild("HumanoidRootPart")
+         if hrp then
+            hrp.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(3, 0, 0)
+         else
+            Rayfield:Notify({
+               Title = "Teleport Failed",
+               Content = "Your character isn't ready.",
+               Duration = 3
+            })
+         end
+      else
+         Rayfield:Notify({
+            Title = "Teleport Failed",
+            Content = "Target player not available.",
+            Duration = 3
+         })
+      end
+   end
+})
+
+-- Update player list automatically
+local function updatePlayerList()
+   local list = {}
+   for _, p in ipairs(game.Players:GetPlayers()) do
+      if p ~= game.Players.LocalPlayer then
+         table.insert(list, p.Name)
+      end
+   end
+   tpDropdown:SetOptions(list)
+end
+
+game.Players.PlayerAdded:Connect(updatePlayerList)
+game.Players.PlayerRemoving:Connect(updatePlayerList)
+updatePlayerList()
+
+-- Infinite Zoom
 PlayerTab:CreateButton({
    Name = "Infinite Zoom",
    Callback = function()
-      local player = game.Players.LocalPlayer
-      player.CameraMaxZoomDistance = math.huge  -- No limit
+      game.Players.LocalPlayer.CameraMaxZoomDistance = math.huge
    end,
 })
