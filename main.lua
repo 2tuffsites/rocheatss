@@ -5,7 +5,7 @@ local Window = Rayfield:CreateWindow({
    Icon = 0,
    LoadingTitle = "cheats brah",
    LoadingSubtitle = "by luc",
-   Theme = "Dark Blue",
+   Theme = "RoyalBlue", -- Changed theme here
 
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false,
@@ -38,7 +38,7 @@ local Window = Rayfield:CreateWindow({
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
 -- SPEED SLIDER
-local Slider = PlayerTab:CreateSlider({
+PlayerTab:CreateSlider({
    Name = "Speed",
    Range = {16, 500},
    Increment = 1,
@@ -53,32 +53,49 @@ local Slider = PlayerTab:CreateSlider({
    end,
 })
 
--- REJOIN VOICE CHAT BUTTON
-PlayerTab:CreateButton({
-   Name = "Rejoin Voice Chat",
-   Callback = function()
-      game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+-- JUMP POWER SLIDER
+PlayerTab:CreateSlider({
+   Name = "Jump Power",
+   Range = {50, 500},
+   Increment = 5,
+   Suffix = "Jump",
+   CurrentValue = 50,
+   Flag = "JumpSlider",
+   Callback = function(Value)
+      local char = game.Players.LocalPlayer.Character
+      if char and char:FindFirstChild("Humanoid") then
+         char.Humanoid.JumpPower = Value
+      end
    end,
 })
 
 -- TELEPORT TO PLAYER DROPDOWN
+local playerToTeleportTo = nil
+
 local TeleportDropdown = PlayerTab:CreateDropdown({
    Name = "Teleport To Player",
    Options = {},
    CurrentOption = nil,
    Flag = "TPDropdown",
-   Callback = function(playerName)
-      local target = game.Players:FindFirstChild(playerName)
+   Callback = function(selectedName)
+      playerToTeleportTo = selectedName
+      local target = game.Players:FindFirstChild(selectedName)
       if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-         local hrp = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+         local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
          if hrp then
             hrp.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(2, 0, 2)
          end
+      else
+         Rayfield:Notify({
+            Title = "Teleport Failed",
+            Content = "Player not found or missing character.",
+            Duration = 3
+         })
       end
    end,
 })
 
--- REFRESH PLAYER LIST FUNCTION
+-- DYNAMIC PLAYER LIST UPDATER
 local function updatePlayers()
    local names = {}
    for _, player in pairs(game.Players:GetPlayers()) do
