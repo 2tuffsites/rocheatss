@@ -5,7 +5,7 @@ local Window = Rayfield:CreateWindow({
    Icon = 0,
    LoadingTitle = "cheats brah",
    LoadingSubtitle = "by luc",
-   Theme = "RoyalBlue", -- Changed theme here
+   Theme = "RoyalBlue", -- ✅ Theme correctly set
 
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false,
@@ -37,75 +37,75 @@ local Window = Rayfield:CreateWindow({
 -- PLAYER TAB
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
--- SPEED SLIDER
+-- ✅ SPEED SLIDER
 PlayerTab:CreateSlider({
    Name = "Speed",
    Range = {16, 500},
    Increment = 1,
    Suffix = "Speed",
    CurrentValue = 16,
-   Flag = "Slider1",
+   Flag = "SpeedSlider",
    Callback = function(Value)
-      local char = game.Players.LocalPlayer.Character
-      if char and char:FindFirstChild("Humanoid") then
-         char.Humanoid.WalkSpeed = Value
+      local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+      if humanoid then
+         humanoid.WalkSpeed = Value
       end
    end,
 })
 
--- JUMP POWER SLIDER
+-- ✅ JUMP POWER SLIDER
 PlayerTab:CreateSlider({
    Name = "Jump Power",
    Range = {50, 500},
-   Increment = 5,
+   Increment = 10,
    Suffix = "Jump",
    CurrentValue = 50,
    Flag = "JumpSlider",
    Callback = function(Value)
-      local char = game.Players.LocalPlayer.Character
-      if char and char:FindFirstChild("Humanoid") then
-         char.Humanoid.JumpPower = Value
+      local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+      if humanoid then
+         humanoid.JumpPower = Value
       end
    end,
 })
 
--- TELEPORT TO PLAYER DROPDOWN
-local playerToTeleportTo = nil
-
-local TeleportDropdown = PlayerTab:CreateDropdown({
+-- ✅ TELEPORT TO PLAYER (Fixed)
+local TeleportDropdown
+TeleportDropdown = PlayerTab:CreateDropdown({
    Name = "Teleport To Player",
    Options = {},
    CurrentOption = nil,
    Flag = "TPDropdown",
-   Callback = function(selectedName)
-      playerToTeleportTo = selectedName
-      local target = game.Players:FindFirstChild(selectedName)
+   Callback = function(playerName)
+      local target = game.Players:FindFirstChild(playerName)
       if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-         local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-         if hrp then
-            hrp.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(2, 0, 2)
+         local myChar = game.Players.LocalPlayer.Character
+         if myChar and myChar:FindFirstChild("HumanoidRootPart") then
+            myChar.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(3, 0, 0)
          end
       else
          Rayfield:Notify({
             Title = "Teleport Failed",
-            Content = "Player not found or missing character.",
+            Content = "Player not found or not fully loaded.",
             Duration = 3
          })
       end
    end,
 })
 
--- DYNAMIC PLAYER LIST UPDATER
-local function updatePlayers()
+-- ✅ UPDATE PLAYER LIST DYNAMICALLY
+local function updatePlayerList()
    local names = {}
-   for _, player in pairs(game.Players:GetPlayers()) do
+   for _, player in ipairs(game.Players:GetPlayers()) do
       if player ~= game.Players.LocalPlayer then
          table.insert(names, player.Name)
       end
    end
-   TeleportDropdown:Refresh(names, true)
+   if TeleportDropdown then
+      TeleportDropdown:Refresh(names, true)
+   end
 end
 
-updatePlayers()
-game.Players.PlayerAdded:Connect(updatePlayers)
-game.Players.PlayerRemoving:Connect(updatePlayers)
+updatePlayerList()
+game.Players.PlayerAdded:Connect(updatePlayerList)
+game.Players.PlayerRemoving:Connect(updatePlayerList)
