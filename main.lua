@@ -132,35 +132,10 @@ PlayerTab:CreateDropdown({
       end
    end,
 })
-local cameraZoomEnabled = false
--- ✅ Infinite Camera Zoom Toggle
-local cameraZoomEnabled = false
-
 PlayerTab:CreateButton({
-   Name = "Toggle Infinite Camera Zoom",
+   Name = "Infinite Zoom Out",
    Callback = function()
-      cameraZoomEnabled = not cameraZoomEnabled
-
-      local camera = game.Workspace.CurrentCamera
-      if cameraZoomEnabled then
-         -- Enable infinite camera zoom: Set CameraType to Scriptable for free zooming
-         camera.CameraType = Enum.CameraType.Scriptable
-         camera.FieldOfView = 70  -- Default Field of View for normal zoom behavior
-         camera.CFrame = camera.CFrame -- Keep camera in its current position
-         
-         -- Allow manual zooming via mouse scroll
-         game:GetService("UserInputService").InputChanged:Connect(function(input)
-            if cameraZoomEnabled and input.UserInputType == Enum.UserInputType.MouseMovement then
-                -- Zoom in and out by changing Camera's position based on mouse wheel input
-                local scrollDelta = input.Delta.y  -- Positive value for zooming in, negative for zooming out
-                camera.CFrame = camera.CFrame * CFrame.new(0, 0, scrollDelta * 0.1)  -- Adjust zoom factor (0.1 can be changed)
-            end
-         end)
-         
-      else
-         -- Restore normal camera behavior
-         camera.CameraType = Enum.CameraType.Custom
-         camera.FieldOfView = 70  -- Default FOV
-      end
+      local player = game.Players.LocalPlayer
+      player.CameraMaxZoomDistance = math.huge  -- No limit
    end,
 })
