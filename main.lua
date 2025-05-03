@@ -66,20 +66,26 @@ PlayerTab:CreateSlider({
       end)
    end,
 })
-
--- TP Tool (Instant TP)
 PlayerTab:CreateButton({
-   Name = "teleport tool",
+   Name = "TP Tool",
    Callback = function()
       local Tool = Instance.new("Tool")
-      Tool.Name = "Teleport tool"
+      Tool.Name = "TP Tool"
       Tool.RequiresHandle = false
       Tool.CanBeDropped = false
 
+      local player = game.Players.LocalPlayer
+      local mouse = player:GetMouse()
+      local connection
+
       Tool.Equipped:Connect(function()
-         local mouse = game.Players.LocalPlayer:GetMouse()
-         mouse.Button1Down:Connect(function()
-            local char = game.Players.LocalPlayer.Character
+         -- Disconnect old connection if still active
+         if connection then
+            connection:Disconnect()
+         end
+
+         connection = mouse.Button1Down:Connect(function()
+            local char = player.Character
             local hrp = char and char:FindFirstChild("HumanoidRootPart")
             if hrp then
                hrp.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 5, 0))
@@ -87,7 +93,14 @@ PlayerTab:CreateButton({
          end)
       end)
 
-      Tool.Parent = game.Players.LocalPlayer.Backpack
+      Tool.Unequipped:Connect(function()
+         if connection then
+            connection:Disconnect()
+            connection = nil
+         end
+      end)
+
+      Tool.Parent = player.Backpack
    end,
 })
 
