@@ -173,3 +173,57 @@ MiscTab:CreateButton({
       loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
    end,
 })
+-- Flight Speed Slider
+local flying = false
+local flySpeed = 50
+local UIS = game:GetService("UserInputService")
+
+MiscTab:CreateSlider({
+   Name = "Flight Speed",
+   Range = {1, 500},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 50,
+   Flag = "FlightSpeedSlider",
+   Callback = function(Value)
+      flySpeed = Value
+   end,
+})
+
+-- Flight logic
+UIS.InputBegan:Connect(function(input, gpe)
+   if gpe then return end
+   if input.KeyCode == Enum.KeyCode.F then
+      flying = not flying
+      local player = game.Players.LocalPlayer
+      local char = player.Character or player.CharacterAdded:Wait()
+      local hrp = char:WaitForChild("HumanoidRootPart")
+      local bodyVelocity = Instance.new("BodyVelocity")
+      bodyVelocity.Name = "FlightVelocity"
+      bodyVelocity.MaxForce = Vector3.new(1, 1, 1) * 1000000
+      bodyVelocity.Velocity = Vector3.zero
+      bodyVelocity.Parent = hrp
+
+      if flying then
+         task.spawn(function()
+            while flying and char and hrp and hrp:FindFirstChild("FlightVelocity") do
+               local direction = Vector3.zero
+               if UIS:IsKeyDown(Enum.KeyCode.W) then direction += workspace.CurrentCamera.CFrame.LookVector end
+               if UIS:IsKeyDown(Enum.KeyCode.S) then direction -= workspace.CurrentCamera.CFrame.LookVector end
+               if UIS:IsKeyDown(Enum.KeyCode.A) then direction -= workspace.CurrentCamera.CFrame.RightVector end
+               if UIS:IsKeyDown(Enum.KeyCode.D) then direction += workspace.CurrentCamera.CFrame.RightVector end
+               if UIS:IsKeyDown(Enum.KeyCode.Space) then direction += Vector3.new(0, 1, 0) end
+               if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then direction -= Vector3.new(0, 1, 0) end
+
+               direction = direction.Unit * flySpeed
+               bodyVelocity.Velocity = direction
+               task.wait()
+            end
+         end)
+      else
+         if hrp:FindFirstChild("FlightVelocity") then
+            hrp.FlightVelocity:Destroy()
+         end
+      end
+   end
+end)
