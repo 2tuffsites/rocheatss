@@ -42,6 +42,7 @@ PlayerTab:CreateSlider({
    end,
 })
 
+-- Jump Power Slider
 PlayerTab:CreateSlider({
    Name = "Jump Power",
    Range = {50, 500},
@@ -66,6 +67,7 @@ PlayerTab:CreateSlider({
    end,
 })
 
+-- TP Tool Button (Smooth TP)
 PlayerTab:CreateButton({
    Name = "TP Tool",
    Callback = function()
@@ -88,7 +90,6 @@ PlayerTab:CreateButton({
             local hrp = char and char:FindFirstChild("HumanoidRootPart")
             if hrp then
                local targetPos = mouse.Hit.Position + Vector3.new(0, 5, 0)
-
                local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
                local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(targetPos)})
                tween:Play()
@@ -104,66 +105,26 @@ PlayerTab:CreateButton({
    end,
 })
 
-   Name = "Teleport To Player",
-   Options = {},
-   CurrentOption = nil,
-   Flag = "TPDropdown",
-   Callback = function(playerName)
-      local localPlr = game.Players.LocalPlayer
-      local target = game.Players:FindFirstChild(playerName)
-
-      if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-         local hrp = localPlr.Character and localPlr.Character:FindFirstChild("HumanoidRootPart")
-         if hrp then
-            hrp.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(3, 0, 0)
-         else
-            Rayfield:Notify({
-               Title = "Teleport Failed",
-               Content = "Your character isn't ready.",
-               Duration = 3
-            })
-         end
-      else
-         Rayfield:Notify({
-            Title = "Teleport Failed",
-            Content = "Target player not available.",
-            Duration = 3
-         })
-      end
-   end
-})
-local function updatePlayerList()
-   local list = {}
-   for _, p in ipairs(game.Players:GetPlayers()) do
-      if p ~= game.Players.LocalPlayer then
-         table.insert(list, p.Name)
-      end
-   end
-   tpDropdown:SetOptions(list)
-end
-
-game.Players.PlayerAdded:Connect(updatePlayerList)
-game.Players.PlayerRemoving:Connect(updatePlayerList)
-updatePlayerList()
-
+-- Infinite Zoom Button
 PlayerTab:CreateButton({
    Name = "Infinite Zoom",
    Callback = function()
       game.Players.LocalPlayer.CameraMaxZoomDistance = math.huge
    end,
 })
+
+-- Invisibility Toggle with R Keybind
 local invisibleToggleEnabled = false
 local isInvisible = false
 local UserInputService = game:GetService("UserInputService")
 
--- Make the player invisible to others and see-through to self
 local function makeInvisible()
    local character = game.Players.LocalPlayer.Character
    if not character then return end
 
    for _, part in ipairs(character:GetDescendants()) do
       if part:IsA("BasePart") then
-         part.Transparency = 0.7 -- You can still see yourself
+         part.Transparency = 0.7
          part.CanCollide = false
       elseif part:IsA("Decal") or part:IsA("Texture") or part:IsA("Accessory") then
          part:Destroy()
@@ -172,7 +133,6 @@ local function makeInvisible()
    isInvisible = true
 end
 
--- Restore visibility
 local function makeVisible()
    local character = game.Players.LocalPlayer.Character
    if not character then return end
@@ -186,7 +146,6 @@ local function makeVisible()
    isInvisible = false
 end
 
--- Rayfield toggle to enable/disable invisibility mode
 PlayerTab:CreateToggle({
    Name = "Invisible Toggle (Press R)",
    CurrentValue = false,
@@ -196,7 +155,6 @@ PlayerTab:CreateToggle({
    end,
 })
 
--- Keybind logic to switch invisibility on/off
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
    if gameProcessed then return end
    if input.KeyCode == Enum.KeyCode.R and invisibleToggleEnabled then
@@ -207,10 +165,10 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
       end
    end
 end)
--- ✅ Misc Tab
+
+-- Misc Tab
 local MiscTab = Window:CreateTab("Misc", 4483362458)
 
--- ✅ Infinite Yield Loader Button
 MiscTab:CreateButton({
    Name = "Load Infinite Yield",
    Callback = function()
