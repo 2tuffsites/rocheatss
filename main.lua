@@ -203,12 +203,12 @@ MiscTab:CreateButton({
    Name = "Custom Baseplate",
    Callback = function()
       local baseplate = Instance.new("Part")
-      baseplate.Name = "2TuffBaseplate"
+      baseplate.Name = "Baseplate"
       baseplate.Anchored = true
-      baseplate.Size = Vector3.new(900, 1, 900) -- 3x typical 300x300 map
-      baseplate.Position = Vector3.new(0, 0.5, 0) -- Slightly above 0 to avoid z-fighting
+      baseplate.Size = Vector3.new(2700, 1, 2700) -- 3x larger than the previous baseplate
+      baseplate.Position = Vector3.new(0, -5, 0) -- Lowered under the game’s baseplate
       baseplate.Material = Enum.Material.SmoothPlastic
-      baseplate.Color = Color3.fromRGB(240, 240, 240)
+      baseplate.Color = Color3.fromRGB(0, 0, 0) -- Black
       baseplate.Parent = workspace
    end,
 })
