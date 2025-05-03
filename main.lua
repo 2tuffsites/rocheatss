@@ -199,3 +199,16 @@ MiscTab:CreateButton({
       loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
    end,
 })
+MiscTab:CreateButton({
+   Name = "Custom Baseplate",
+   Callback = function()
+      local baseplate = Instance.new("Part")
+      baseplate.Name = "2TuffBaseplate"
+      baseplate.Anchored = true
+      baseplate.Size = Vector3.new(900, 1, 900) -- 3x typical 300x300 map
+      baseplate.Position = Vector3.new(0, 0.5, 0) -- Slightly above 0 to avoid z-fighting
+      baseplate.Material = Enum.Material.SmoothPlastic
+      baseplate.Color = Color3.fromRGB(240, 240, 240)
+      baseplate.Parent = workspace
+   end,
+})
