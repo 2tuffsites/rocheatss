@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "2tuff cheats",
+   Name = "2tuff Menu",
    Icon = 0,
    LoadingTitle = "cheats brah",
    LoadingSubtitle = "by luc",
