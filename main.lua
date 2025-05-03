@@ -173,82 +173,98 @@ MiscTab:CreateButton({
       loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
    end,
 })
--- Flight Setup (WASD + Space, toggle with F)
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local player = game.Players.LocalPlayer
 local flySpeed = 50
 local flying = false
-local flightDirection = Vector3.zero
 local flightVelocity = nil
+local flightGyro = nil
+local movementVector = Vector3.zero
 local connections = {}
 
 -- Flight Speed Slider
 MiscTab:CreateSlider({
-   Name = "Flight Speed",
-   Range = {1, 500},
-   Increment = 1,
-   Suffix = "Speed",
-   CurrentValue = 50,
-   Flag = "FlightSpeedSlider",
-   Callback = function(Value)
-      flySpeed = Value
-   end,
+    Name = "Flight Speed",
+    Range = {1, 500},
+    Increment = 1,
+    Suffix = "Speed",
+    CurrentValue = 50,
+    Flag = "FlightSpeedSlider",
+    Callback = function(Value)
+        flySpeed = Value
+    end,
 })
 
--- Movement input keys
-local movementKeys = {
-   [Enum.KeyCode.W] = Vector3.new(0, 0, -1),
-   [Enum.KeyCode.S] = Vector3.new(0, 0, 1),
-   [Enum.KeyCode.A] = Vector3.new(-1, 0, 0),
-   [Enum.KeyCode.D] = Vector3.new(1, 0, 0),
-   [Enum.KeyCode.Space] = Vector3.new(0, 1, 0),
+-- Flight Direction Keys
+local directions = {
+    W = false,
+    A = false,
+    S = false,
+    D = false,
+    Space = false,
 }
 
-local activeDirections = {}
-
-local function updateDirection()
-   local dir = Vector3.zero
-   for _, v in pairs(activeDirections) do
-      dir += v
-   end
-   flightDirection = dir.Unit == dir.Unit and dir.Unit or Vector3.zero
+-- Compute movement vector from keys
+local function getMovementVector()
+    local cam = workspace.CurrentCamera
+    local move = Vector3.zero
+    if directions.W then move += cam.CFrame.LookVector end
+    if directions.S then move -= cam.CFrame.LookVector end
+    if directions.A then move -= cam.CFrame.RightVector end
+    if directions.D then move += cam.CFrame.RightVector end
+    if directions.Space then move += Vector3.new(0, 1, 0) end
+    return move.Unit * flySpeed
 end
 
+-- Toggle Flight
 UIS.InputBegan:Connect(function(input, gpe)
-   if gpe then return end
-   if movementKeys[input.KeyCode] then
-      activeDirections[input.KeyCode] = movementKeys[input.KeyCode]
-      updateDirection()
-   elseif input.KeyCode == Enum.KeyCode.F then
-      flying = not flying
-      local char = player.Character
-      local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if gpe then return end
+    local key = input.KeyCode
 
-      if flying and hrp then
-         flightVelocity = Instance.new("BodyVelocity")
-         flightVelocity.Velocity = Vector3.zero
-         flightVelocity.MaxForce = Vector3.new(1, 1, 1) * 500000
-         flightVelocity.P = 5000
-         flightVelocity.Name = "FlightVelocity"
-         flightVelocity.Parent = hrp
+    if key == Enum.KeyCode.F then
+        flying = not flying
+        local char = player.Character
+        if not char then return end
 
-         connections["flightLoop"] = RunService.RenderStepped:Connect(function()
-            if not flying or not hrp then return end
-            local camCF = workspace.CurrentCamera.CFrame
-            local moveVec = (camCF.RightVector * flightDirection.X + camCF.LookVector * flightDirection.Z + Vector3.new(0, flightDirection.Y, 0))
-            flightVelocity.Velocity = moveVec * flySpeed
-         end)
-      else
-         if flightVelocity then flightVelocity:Destroy() end
-         if connections["flightLoop"] then connections["flightLoop"]:Disconnect() end
-      end
-   end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+
+        if flying then
+            -- Stop fall
+            char:FindFirstChildOfClass("Humanoid").PlatformStand = true
+
+            flightVelocity = Instance.new("BodyVelocity")
+            flightVelocity.Velocity = Vector3.zero
+            flightVelocity.MaxForce = Vector3.new(1, 1, 1) * 1e6
+            flightVelocity.P = 10000
+            flightVelocity.Name = "FlightVelocity"
+            flightVelocity.Parent = hrp
+
+            connections["fly"] = RunService.RenderStepped:Connect(function()
+                if not flying or not hrp then return end
+                local moveVec = getMovementVector()
+                flightVelocity.Velocity = moveVec
+            end)
+        else
+            char:FindFirstChildOfClass("Humanoid").PlatformStand = false
+            if flightVelocity then flightVelocity:Destroy() end
+            if connections["fly"] then connections["fly"]:Disconnect() end
+        end
+    elseif key == Enum.KeyCode.W then directions.W = true
+    elseif key == Enum.KeyCode.A then directions.A = true
+    elseif key == Enum.KeyCode.S then directions.S = true
+    elseif key == Enum.KeyCode.D then directions.D = true
+    elseif key == Enum.KeyCode.Space then directions.Space = true
+    end
 end)
 
 UIS.InputEnded:Connect(function(input)
-   if movementKeys[input.KeyCode] then
-      activeDirections[input.KeyCode] = nil
-      updateDirection()
-   end
+    local key = input.KeyCode
+    if key == Enum.KeyCode.W then directions.W = false
+    elseif key == Enum.KeyCode.A then directions.A = false
+    elseif key == Enum.KeyCode.S then directions.S = false
+    elseif key == Enum.KeyCode.D then directions.D = false
+    elseif key == Enum.KeyCode.Space then directions.Space = false
+    end
 end)
