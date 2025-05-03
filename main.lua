@@ -66,6 +66,8 @@ PlayerTab:CreateSlider({
       end)
    end,
 })
+
+-- TP Tool
 PlayerTab:CreateButton({
    Name = "TP Tool",
    Callback = function()
@@ -79,11 +81,7 @@ PlayerTab:CreateButton({
       local connection
 
       Tool.Equipped:Connect(function()
-         -- Disconnect old connection if still active
-         if connection then
-            connection:Disconnect()
-         end
-
+         if connection then connection:Disconnect() end
          connection = mouse.Button1Down:Connect(function()
             local char = player.Character
             local hrp = char and char:FindFirstChild("HumanoidRootPart")
@@ -111,13 +109,14 @@ PlayerTab:CreateButton({
       game.Players.LocalPlayer.CameraMaxZoomDistance = math.huge
    end,
 })
+
+-- Invisibility Toggle
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = game.Players.LocalPlayer
 local isInvisible = false
 local invisibilityEnabled = false
 local originalHRPParent = nil
 
--- Toggle in UI
 PlayerTab:CreateToggle({
    Name = "Invisible Toggle (Press R)",
    CurrentValue = false,
@@ -127,23 +126,23 @@ PlayerTab:CreateToggle({
    end,
 })
 
--- Toggle invisibility with R
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
    if gameProcessed then return end
    if input.KeyCode == Enum.KeyCode.R and invisibilityEnabled then
       local char = LocalPlayer.Character
       if not char then return end
-
       local hrp = char:FindFirstChild("HumanoidRootPart")
       if not hrp then return end
 
       if not isInvisible then
          originalHRPParent = hrp.Parent
-         hrp.Parent = nil -- removes from character so you're not replicated
-         -- Optional: fade local character visuals
+         hrp.Parent = nil
          for _, part in ipairs(char:GetDescendants()) do
             if part:IsA("BasePart") then
                part.Transparency = 0.7
+               if part:FindFirstChildOfClass("SelectionBox") then
+                  part:FindFirstChildOfClass("SelectionBox"):Destroy()
+               end
             elseif part:IsA("Decal") or part:IsA("Texture") then
                part:Destroy()
             end
@@ -156,6 +155,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
          for _, part in ipairs(char:GetDescendants()) do
             if part:IsA("BasePart") then
                part.Transparency = 0
+               if part:FindFirstChildOfClass("SelectionBox") then
+                  part:FindFirstChildOfClass("SelectionBox"):Destroy()
+               end
             end
          end
          isInvisible = false
@@ -163,24 +165,10 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
    end
 end)
 
-})
-
--- Keybind Handling
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-   if gameProcessed then return end
-   if input.KeyCode == Enum.KeyCode.R and invisibleToggleEnabled then
-      if isInvisible then
-         makeVisible()
-      else
-         makeInvisible()
-      end
-   end
-end)
-
 -- Misc Tab
 local MiscTab = Window:CreateTab("Misc", 4483362458)
 
--- Infinite Yield Loader Button (FE v6.3.1)
+-- Infinite Yield Button
 MiscTab:CreateButton({
    Name = "Infinite Yield",
    Callback = function()
