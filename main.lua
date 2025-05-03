@@ -200,21 +200,6 @@ MiscTab:CreateButton({
    end,
 })
 MiscTab:CreateButton({
-   Name = "Custom Baseplate",
-   Callback = function()
-      local baseplate = Instance.new("Part")
-      baseplate.Name = "Baseplate"
-      baseplate.Anchored = true
-      baseplate.Size = Vector3.new(3000, 1, 3000) -- 3x larger than the previous baseplate
-      baseplate.Position = Vector3.new(0, 0, 0) -- Lowered under the game’s baseplate
-      baseplate.Material = Enum.Material.SmoothPlastic
-      baseplate.Color = Color3.fromRGB(0, 0, 0) -- Black
-      baseplate.Parent = workspace
-   end,
-})
-local baseplate = nil
-local selectedColor = Color3.fromRGB(0, 0, 0) -- Default black
-
 -- Toggle for enabling/disabling the baseplate
 MiscTab:CreateToggle({
    Name = "Custom Baseplate Toggle",
@@ -224,9 +209,9 @@ MiscTab:CreateToggle({
       if Value then
          if not baseplate then
             baseplate = Instance.new("Part")
-            baseplate.Size = Vector3.new(1536, 1, 1536) -- 3x 512
+            baseplate.Size = Vector3.new(3000, 0, 3000) -- 3x 512
             baseplate.Anchored = true
-            baseplate.Position = Vector3.new(0, -1, 0)
+            baseplate.Position = Vector3.new(0, 0, 0)
             baseplate.Color = selectedColor
             baseplate.Material = Enum.Material.SmoothPlastic
             baseplate.Name = "CustomBaseplate"
