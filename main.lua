@@ -66,12 +66,12 @@ PlayerTab:CreateSlider({
    end,
 })
 
--- Give TP Tool
 PlayerTab:CreateButton({
    Name = "TP Tool",
    Callback = function()
+      local TweenService = game:GetService("TweenService")
       local Tool = Instance.new("Tool")
-      Tool.Name = "teleport tool"
+      Tool.Name = "TP Tool"
       Tool.RequiresHandle = false
       Tool.CanBeDropped = false
 
@@ -87,7 +87,11 @@ PlayerTab:CreateButton({
             local char = game.Players.LocalPlayer.Character
             local hrp = char and char:FindFirstChild("HumanoidRootPart")
             if hrp then
-               hrp.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 5, 0))
+               local targetPos = mouse.Hit.Position + Vector3.new(0, 5, 0)
+
+               local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+               local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(targetPos)})
+               tween:Play()
             end
          end)
       end)
@@ -99,7 +103,7 @@ PlayerTab:CreateButton({
       Tool.Parent = game.Players.LocalPlayer.Backpack
    end,
 })
-local tpDropdown = PlayerTab:CreateDropdown({
+
    Name = "Teleport To Player",
    Options = {},
    CurrentOption = nil,
