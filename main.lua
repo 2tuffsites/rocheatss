@@ -173,11 +173,17 @@ MiscTab:CreateButton({
       loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
    end,
 })
--- Flight Speed Slider
-local flying = false
-local flySpeed = 50
+-- Flight Setup (WASD + Space, toggle with F)
 local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local player = game.Players.LocalPlayer
+local flySpeed = 50
+local flying = false
+local flightDirection = Vector3.zero
+local flightVelocity = nil
+local connections = {}
 
+-- Flight Speed Slider
 MiscTab:CreateSlider({
    Name = "Flight Speed",
    Range = {1, 500},
@@ -190,40 +196,59 @@ MiscTab:CreateSlider({
    end,
 })
 
--- Flight logic
+-- Movement input keys
+local movementKeys = {
+   [Enum.KeyCode.W] = Vector3.new(0, 0, -1),
+   [Enum.KeyCode.S] = Vector3.new(0, 0, 1),
+   [Enum.KeyCode.A] = Vector3.new(-1, 0, 0),
+   [Enum.KeyCode.D] = Vector3.new(1, 0, 0),
+   [Enum.KeyCode.Space] = Vector3.new(0, 1, 0),
+}
+
+local activeDirections = {}
+
+local function updateDirection()
+   local dir = Vector3.zero
+   for _, v in pairs(activeDirections) do
+      dir += v
+   end
+   flightDirection = dir.Unit == dir.Unit and dir.Unit or Vector3.zero
+end
+
 UIS.InputBegan:Connect(function(input, gpe)
    if gpe then return end
-   if input.KeyCode == Enum.KeyCode.F then
+   if movementKeys[input.KeyCode] then
+      activeDirections[input.KeyCode] = movementKeys[input.KeyCode]
+      updateDirection()
+   elseif input.KeyCode == Enum.KeyCode.F then
       flying = not flying
-      local player = game.Players.LocalPlayer
-      local char = player.Character or player.CharacterAdded:Wait()
-      local hrp = char:WaitForChild("HumanoidRootPart")
-      local bodyVelocity = Instance.new("BodyVelocity")
-      bodyVelocity.Name = "FlightVelocity"
-      bodyVelocity.MaxForce = Vector3.new(1, 1, 1) * 1000000
-      bodyVelocity.Velocity = Vector3.zero
-      bodyVelocity.Parent = hrp
+      local char = player.Character
+      local hrp = char and char:FindFirstChild("HumanoidRootPart")
 
-      if flying then
-         task.spawn(function()
-            while flying and char and hrp and hrp:FindFirstChild("FlightVelocity") do
-               local direction = Vector3.zero
-               if UIS:IsKeyDown(Enum.KeyCode.W) then direction += workspace.CurrentCamera.CFrame.LookVector end
-               if UIS:IsKeyDown(Enum.KeyCode.S) then direction -= workspace.CurrentCamera.CFrame.LookVector end
-               if UIS:IsKeyDown(Enum.KeyCode.A) then direction -= workspace.CurrentCamera.CFrame.RightVector end
-               if UIS:IsKeyDown(Enum.KeyCode.D) then direction += workspace.CurrentCamera.CFrame.RightVector end
-               if UIS:IsKeyDown(Enum.KeyCode.Space) then direction += Vector3.new(0, 1, 0) end
-               if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then direction -= Vector3.new(0, 1, 0) end
+      if flying and hrp then
+         flightVelocity = Instance.new("BodyVelocity")
+         flightVelocity.Velocity = Vector3.zero
+         flightVelocity.MaxForce = Vector3.new(1, 1, 1) * 500000
+         flightVelocity.P = 5000
+         flightVelocity.Name = "FlightVelocity"
+         flightVelocity.Parent = hrp
 
-               direction = direction.Unit * flySpeed
-               bodyVelocity.Velocity = direction
-               task.wait()
-            end
+         connections["flightLoop"] = RunService.RenderStepped:Connect(function()
+            if not flying or not hrp then return end
+            local camCF = workspace.CurrentCamera.CFrame
+            local moveVec = (camCF.RightVector * flightDirection.X + camCF.LookVector * flightDirection.Z + Vector3.new(0, flightDirection.Y, 0))
+            flightVelocity.Velocity = moveVec * flySpeed
          end)
       else
-         if hrp:FindFirstChild("FlightVelocity") then
-            hrp.FlightVelocity:Destroy()
-         end
+         if flightVelocity then flightVelocity:Destroy() end
+         if connections["flightLoop"] then connections["flightLoop"]:Disconnect() end
       end
+   end
+end)
+
+UIS.InputEnded:Connect(function(input)
+   if movementKeys[input.KeyCode] then
+      activeDirections[input.KeyCode] = nil
+      updateDirection()
    end
 end)
