@@ -212,3 +212,52 @@ MiscTab:CreateButton({
       baseplate.Parent = workspace
    end,
 })
+local baseplate = nil
+local selectedColor = Color3.fromRGB(0, 0, 0) -- Default black
+
+-- Toggle for enabling/disabling the baseplate
+MiscTab:CreateToggle({
+   Name = "Custom Baseplate Toggle",
+   CurrentValue = false,
+   Flag = "BaseplateToggle",
+   Callback = function(Value)
+      if Value then
+         if not baseplate then
+            baseplate = Instance.new("Part")
+            baseplate.Size = Vector3.new(1536, 1, 1536) -- 3x 512
+            baseplate.Anchored = true
+            baseplate.Position = Vector3.new(0, -1, 0)
+            baseplate.Color = selectedColor
+            baseplate.Material = Enum.Material.SmoothPlastic
+            baseplate.Name = "CustomBaseplate"
+            baseplate.Parent = workspace
+         else
+            baseplate.Parent = workspace
+         end
+      else
+         if baseplate then
+            baseplate.Parent = nil
+         end
+      end
+   end,
+})
+
+-- Color picker
+MiscTab:CreateColorPicker({
+   Name = "Baseplate Color",
+   Flag = "BaseplateColor",
+   Color = selectedColor,
+   Callback = function(Color)
+      selectedColor = Color
+   end,
+})
+
+-- Apply button
+MiscTab:CreateButton({
+   Name = "Apply Baseplate Color",
+   Callback = function()
+      if baseplate then
+         baseplate.Color = selectedColor
+      end
+   end,
+})
