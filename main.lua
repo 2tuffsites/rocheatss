@@ -182,7 +182,7 @@ local MiscTab = Window:CreateTab("Misc", 4483362458)
 
 -- Infinite Yield Loader Button (FE v6.3.1)
 MiscTab:CreateButton({
-   Name = "Load Infinite Yield FE v6.3.1",
+   Name = "Infinite Yield",
    Callback = function()
       loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
    end,
