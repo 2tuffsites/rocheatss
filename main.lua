@@ -68,10 +68,10 @@ PlayerTab:CreateSlider({
 
 -- Give TP Tool
 PlayerTab:CreateButton({
-   Name = "Give TP Tool",
+   Name = "TP Tool",
    Callback = function()
       local Tool = Instance.new("Tool")
-      Tool.Name = "TP Tool"
+      Tool.Name = "teleport tool"
       Tool.RequiresHandle = false
       Tool.CanBeDropped = false
 
