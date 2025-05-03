@@ -206,7 +206,7 @@ MiscTab:CreateButton({
       baseplate.Name = "Baseplate"
       baseplate.Anchored = true
       baseplate.Size = Vector3.new(3000, 1, 3000) -- 3x larger than the previous baseplate
-      baseplate.Position = Vector3.new(0, -2, 0) -- Lowered under the game’s baseplate
+      baseplate.Position = Vector3.new(0, 0, 0) -- Lowered under the game’s baseplate
       baseplate.Material = Enum.Material.SmoothPlastic
       baseplate.Color = Color3.fromRGB(0, 0, 0) -- Black
       baseplate.Parent = workspace
