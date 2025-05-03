@@ -3,12 +3,12 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "2tuff Menu",
    Icon = 0,
-   LoadingTitle = "Hey! cheating is against tos!{jokin}",
+   LoadingTitle = "Hey! no cheating!{jokin}",
    LoadingSubtitle = "by luc",
    Theme = {
       TextColor = Color3.fromRGB(0, 102, 204), -- Royal blue text
       Background = Color3.fromRGB(255, 255, 255), -- White background
-      Topbar = Color3.fromRGB(0, 102, 204), -- Royal blue topbar
+      Topbar = Color3.fromRGB(212, 175, 55), -- Gold topbar
       Shadow = Color3.fromRGB(200, 200, 200),
 
       NotificationBackground = Color3.fromRGB(230, 230, 230),
@@ -18,7 +18,7 @@ local Window = Rayfield:CreateWindow({
       TabStroke = Color3.fromRGB(180, 180, 180),
       TabBackgroundSelected = Color3.fromRGB(255, 255, 255),
       TabTextColor = Color3.fromRGB(0, 102, 204),
-      SelectedTabTextColor = Color3.fromRGB(255, 255, 255), -- White text on selected top tabs
+      SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
 
       ElementBackground = Color3.fromRGB(245, 245, 245),
       ElementBackgroundHover = Color3.fromRGB(240, 240, 240),
@@ -26,8 +26,8 @@ local Window = Rayfield:CreateWindow({
       ElementStroke = Color3.fromRGB(200, 200, 200),
       SecondaryElementStroke = Color3.fromRGB(180, 180, 180),
               
-      SliderBackground = Color3.fromRGB(255, 255, 255), -- White slider
-      SliderProgress = Color3.fromRGB(0, 102, 204), -- Royal blue slider text
+      SliderBackground = Color3.fromRGB(255, 255, 255),
+      SliderProgress = Color3.fromRGB(0, 102, 204),
       SliderStroke = Color3.fromRGB(0, 102, 204),
 
       ToggleBackground = Color3.fromRGB(240, 240, 240),
