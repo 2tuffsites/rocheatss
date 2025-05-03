@@ -142,6 +142,7 @@ PlayerTab:CreateButton({
    end,
 })
 
+-- Invisible Toggle (Press R)
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = game.Players.LocalPlayer
 local isInvisible = false
@@ -199,8 +200,11 @@ MiscTab:CreateButton({
       loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
    end,
 })
-MiscTab:CreateButton({
--- Toggle for enabling/disabling the baseplate
+
+-- Baseplate and Color Picker
+local selectedColor = Color3.fromRGB(255, 255, 255)
+local baseplate = nil
+
 MiscTab:CreateToggle({
    Name = "Custom Baseplate Toggle",
    CurrentValue = false,
@@ -209,7 +213,7 @@ MiscTab:CreateToggle({
       if Value then
          if not baseplate then
             baseplate = Instance.new("Part")
-            baseplate.Size = Vector3.new(3000, 0, 3000) -- 3x 512
+            baseplate.Size = Vector3.new(3000, 0, 3000)
             baseplate.Anchored = true
             baseplate.Position = Vector3.new(0, 1, 0)
             baseplate.Color = selectedColor
@@ -227,7 +231,6 @@ MiscTab:CreateToggle({
    end,
 })
 
--- Color picker
 MiscTab:CreateColorPicker({
    Name = "Baseplate Color",
    Flag = "BaseplateColor",
@@ -237,7 +240,6 @@ MiscTab:CreateColorPicker({
    end,
 })
 
--- Apply button
 MiscTab:CreateButton({
    Name = "Apply Baseplate Color",
    Callback = function()
