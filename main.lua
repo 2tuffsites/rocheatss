@@ -111,58 +111,58 @@ PlayerTab:CreateButton({
       game.Players.LocalPlayer.CameraMaxZoomDistance = math.huge
    end,
 })
-
--- Invisibility Toggle (R key)
-local invisibleToggleEnabled = false
-local isInvisible = false
 local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = game.Players.LocalPlayer
+local isInvisible = false
+local invisibilityEnabled = false
+local originalHRPParent = nil
 
--- Invisibility Functions
-local function makeInvisible()
-   local character = game.Players.LocalPlayer.Character
-   if not character then return end
-
-   for _, item in ipairs(character:GetDescendants()) do
-      if item:IsA("BasePart") then
-         item.Transparency = 0.7
-         item.CanCollide = false
-         if item:FindFirstChild("OriginalColor") == nil then
-            local value = Instance.new("Color3Value", item)
-            value.Name = "OriginalColor"
-            value.Value = item.Color
-         end
-      elseif item:IsA("Decal") or item:IsA("Texture") or item:IsA("Accessory") then
-         item:Destroy()
-      end
-   end
-   isInvisible = true
-end
-
-local function makeVisible()
-   local character = game.Players.LocalPlayer.Character
-   if not character then return end
-
-   for _, item in ipairs(character:GetDescendants()) do
-      if item:IsA("BasePart") then
-         item.Transparency = 0
-         item.CanCollide = true
-         if item:FindFirstChild("OriginalColor") then
-            item.Color = item.OriginalColor.Value
-            item.OriginalColor:Destroy()
-         end
-      end
-   end
-   isInvisible = false
-end
-
--- Rayfield Toggle
+-- Toggle in UI
 PlayerTab:CreateToggle({
    Name = "Invisible Toggle (Press R)",
    CurrentValue = false,
    Flag = "InvisibleToggle",
    Callback = function(Value)
-      invisibleToggleEnabled = Value
+      invisibilityEnabled = Value
    end,
+})
+
+-- Toggle invisibility with R
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+   if gameProcessed then return end
+   if input.KeyCode == Enum.KeyCode.R and invisibilityEnabled then
+      local char = LocalPlayer.Character
+      if not char then return end
+
+      local hrp = char:FindFirstChild("HumanoidRootPart")
+      if not hrp then return end
+
+      if not isInvisible then
+         originalHRPParent = hrp.Parent
+         hrp.Parent = nil -- removes from character so you're not replicated
+         -- Optional: fade local character visuals
+         for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+               part.Transparency = 0.7
+            elseif part:IsA("Decal") or part:IsA("Texture") then
+               part:Destroy()
+            end
+         end
+         isInvisible = true
+      else
+         if originalHRPParent then
+            hrp.Parent = originalHRPParent
+         end
+         for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+               part.Transparency = 0
+            end
+         end
+         isInvisible = false
+      end
+   end
+end)
+
 })
 
 -- Keybind Handling
