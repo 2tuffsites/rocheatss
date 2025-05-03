@@ -268,3 +268,60 @@ UIS.InputEnded:Connect(function(input)
     elseif key == Enum.KeyCode.Space then directions.Space = false
     end
 end)
+-- Misc Tab
+local MiscTab = Window:CreateTab("Misc", 4483362458)
+
+-- Flight Speed Slider
+local flightSpeed = 50 -- Default flight speed
+MiscTab:CreateSlider({
+   Name = "Flight Speed",
+   Range = {1, 500},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = flightSpeed,
+   Flag = "FlightSlider",
+   Callback = function(Value)
+      flightSpeed = Value
+   end,
+})
+
+-- Flight Controls
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = game.Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local flying = false
+local bodyVelocity = nil
+
+local function startFlying()
+   local char = LocalPlayer.Character
+   if not char then return end
+
+   local hrp = char:FindFirstChild("HumanoidRootPart")
+   if not hrp then return end
+
+   -- Creating a BodyVelocity for smooth flight
+   bodyVelocity = Instance.new("BodyVelocity")
+   bodyVelocity.MaxForce = Vector3.new(500000, 500000, 500000) -- Strong force to keep movement stable
+   bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+   bodyVelocity.Parent = hrp
+
+   flying = true
+end
+
+local function stopFlying()
+   local char = LocalPlayer.Character
+   if not char then return end
+
+   local hrp = char:FindFirstChild("HumanoidRootPart")
+   if not hrp then return end
+
+   -- Remove BodyVelocity to stop flying
+   if bodyVelocity then
+      bodyVelocity:Destroy()
+      bodyVelocity = nil
+   end
+
+   flying = false
+end
+
+-- Tog
