@@ -6,19 +6,19 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "cheats brah",
    LoadingSubtitle = "by luc",
    Theme = {
-      TextColor = Color3.fromRGB(65, 105, 225), -- Royal Blue text
-      Background = Color3.fromRGB(0, 0, 0),     -- Black background
-      Topbar = Color3.fromRGB(255, 255, 255),   -- White topbar
+      TextColor = Color3.fromRGB(0, 0, 0),
+      Background = Color3.fromRGB(0, 0, 0),
+      Topbar = Color3.fromRGB(255, 255, 255),
       Shadow = Color3.fromRGB(20, 20, 20),
 
       NotificationBackground = Color3.fromRGB(20, 20, 20),
       NotificationActionsBackground = Color3.fromRGB(230, 230, 230),
 
-      TabBackground = Color3.fromRGB(80, 80, 80),
+      TabBackground = Color3.fromRGB(40, 40, 40),
       TabStroke = Color3.fromRGB(85, 85, 85),
       TabBackgroundSelected = Color3.fromRGB(210, 210, 210),
-      TabTextColor = Color3.fromRGB(65, 105, 225),
-      SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
+      TabTextColor = Color3.fromRGB(0, 0, 0),
+      SelectedTabTextColor = Color3.fromRGB(0, 0, 0),
 
       ElementBackground = Color3.fromRGB(35, 35, 35),
       ElementBackgroundHover = Color3.fromRGB(40, 40, 40),
@@ -26,14 +26,14 @@ local Window = Rayfield:CreateWindow({
       ElementStroke = Color3.fromRGB(50, 50, 50),
       SecondaryElementStroke = Color3.fromRGB(40, 40, 40),
 
-      SliderBackground = Color3.fromRGB(65, 105, 225),
-      SliderProgress = Color3.fromRGB(65, 105, 225),
-      SliderStroke = Color3.fromRGB(90, 140, 255),
+      SliderBackground = Color3.fromRGB(50, 138, 220),
+      SliderProgress = Color3.fromRGB(50, 138, 220),
+      SliderStroke = Color3.fromRGB(58, 163, 255),
 
       ToggleBackground = Color3.fromRGB(30, 30, 30),
-      ToggleEnabled = Color3.fromRGB(65, 105, 225),
+      ToggleEnabled = Color3.fromRGB(0, 146, 214),
       ToggleDisabled = Color3.fromRGB(100, 100, 100),
-      ToggleEnabledStroke = Color3.fromRGB(90, 140, 255),
+      ToggleEnabledStroke = Color3.fromRGB(0, 170, 255),
       ToggleDisabledStroke = Color3.fromRGB(125, 125, 125),
       ToggleEnabledOuterStroke = Color3.fromRGB(100, 100, 100),
       ToggleDisabledOuterStroke = Color3.fromRGB(65, 65, 65),
@@ -62,10 +62,8 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
--- Player Tab
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
--- Speed Slider
 PlayerTab:CreateSlider({
    Name = "Speed",
    Range = {16, 500},
@@ -81,7 +79,6 @@ PlayerTab:CreateSlider({
    end,
 })
 
--- Jump Power Slider
 PlayerTab:CreateSlider({
    Name = "Jump Power",
    Range = {50, 500},
@@ -106,7 +103,6 @@ PlayerTab:CreateSlider({
    end,
 })
 
--- TP Tool
 PlayerTab:CreateButton({
    Name = "TP Tool",
    Callback = function()
@@ -144,7 +140,6 @@ PlayerTab:CreateButton({
    end,
 })
 
--- Infinite Zoom
 PlayerTab:CreateButton({
    Name = "Infinite Zoom",
    Callback = function()
@@ -152,7 +147,6 @@ PlayerTab:CreateButton({
    end,
 })
 
--- Invisibility Toggle
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = game.Players.LocalPlayer
 local isInvisible = false
@@ -179,7 +173,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 
       if not isInvisible then
          originalHRPParent = hrp.Parent
-         hrp.Parent = nil -- Server-invisible method
+         hrp.Parent = nil
          for _, part in ipairs(char:GetDescendants()) do
             if part:IsA("BasePart") then
                part.Transparency = 0.7
@@ -202,10 +196,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
    end
 end)
 
--- Misc Tab
 local MiscTab = Window:CreateTab("Misc", 4483362458)
 
--- Infinite Yield Button
 MiscTab:CreateButton({
    Name = "Infinite Yield",
    Callback = function()
