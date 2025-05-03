@@ -148,3 +148,58 @@ PlayerTab:CreateButton({
       game.Players.LocalPlayer.CameraMaxZoomDistance = math.huge
    end,
 })
+local invisibleToggleEnabled = false
+local isInvisible = false
+local UserInputService = game:GetService("UserInputService")
+
+-- Make the player invisible to others and see-through to self
+local function makeInvisible()
+   local character = game.Players.LocalPlayer.Character
+   if not character then return end
+
+   for _, part in ipairs(character:GetDescendants()) do
+      if part:IsA("BasePart") then
+         part.Transparency = 0.7 -- You can still see yourself
+         part.CanCollide = false
+      elseif part:IsA("Decal") or part:IsA("Texture") or part:IsA("Accessory") then
+         part:Destroy()
+      end
+   end
+   isInvisible = true
+end
+
+-- Restore visibility
+local function makeVisible()
+   local character = game.Players.LocalPlayer.Character
+   if not character then return end
+
+   for _, part in ipairs(character:GetDescendants()) do
+      if part:IsA("BasePart") then
+         part.Transparency = 0
+         part.CanCollide = true
+      end
+   end
+   isInvisible = false
+end
+
+-- Rayfield toggle to enable/disable invisibility mode
+PlayerTab:CreateToggle({
+   Name = "Invisible Toggle (Press R)",
+   CurrentValue = false,
+   Flag = "InvisibleToggle",
+   Callback = function(Value)
+      invisibleToggleEnabled = Value
+   end,
+})
+
+-- Keybind logic to switch invisibility on/off
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+   if gameProcessed then return end
+   if input.KeyCode == Enum.KeyCode.R and invisibleToggleEnabled then
+      if isInvisible then
+         makeVisible()
+      else
+         makeInvisible()
+      end
+   end
+end)
