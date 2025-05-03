@@ -3,46 +3,46 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "2tuff Menu",
    Icon = 0,
-   LoadingTitle = "hey! exploiting is against tos",
+   LoadingTitle = "Hey! cheating is against tos!{jokin}",
    LoadingSubtitle = "by luc",
    Theme = {
-      TextColor = Color3.fromRGB(65, 105, 225), -- Royal Blue
-      Background = Color3.fromRGB(255, 255, 255), -- White
-      Topbar = Color3.fromRGB(65, 105, 225), -- Royal Blue
-      Shadow = Color3.fromRGB(230, 230, 230),
+      TextColor = Color3.fromRGB(0, 102, 204), -- Royal blue text
+      Background = Color3.fromRGB(255, 255, 255), -- White background
+      Topbar = Color3.fromRGB(0, 102, 204), -- Royal blue topbar
+      Shadow = Color3.fromRGB(200, 200, 200),
 
-      NotificationBackground = Color3.fromRGB(240, 240, 240),
+      NotificationBackground = Color3.fromRGB(230, 230, 230),
       NotificationActionsBackground = Color3.fromRGB(255, 255, 255),
 
-      TabBackground = Color3.fromRGB(230, 230, 230),
-      TabStroke = Color3.fromRGB(200, 200, 200),
+      TabBackground = Color3.fromRGB(220, 220, 220),
+      TabStroke = Color3.fromRGB(180, 180, 180),
       TabBackgroundSelected = Color3.fromRGB(255, 255, 255),
-      TabTextColor = Color3.fromRGB(65, 105, 225),
-      SelectedTabTextColor = Color3.fromRGB(65, 105, 225),
+      TabTextColor = Color3.fromRGB(0, 102, 204),
+      SelectedTabTextColor = Color3.fromRGB(255, 255, 255), -- White text on selected top tabs
 
-      ElementBackground = Color3.fromRGB(240, 240, 240),
-      ElementBackgroundHover = Color3.fromRGB(250, 250, 250),
-      SecondaryElementBackground = Color3.fromRGB(240, 240, 240),
+      ElementBackground = Color3.fromRGB(245, 245, 245),
+      ElementBackgroundHover = Color3.fromRGB(240, 240, 240),
+      SecondaryElementBackground = Color3.fromRGB(230, 230, 230),
       ElementStroke = Color3.fromRGB(200, 200, 200),
       SecondaryElementStroke = Color3.fromRGB(180, 180, 180),
-
-      SliderBackground = Color3.fromRGB(255, 255, 255),
-      SliderProgress = Color3.fromRGB(255, 255, 255),
-      SliderStroke = Color3.fromRGB(200, 200, 200),
+              
+      SliderBackground = Color3.fromRGB(255, 255, 255), -- White slider
+      SliderProgress = Color3.fromRGB(0, 102, 204), -- Royal blue slider text
+      SliderStroke = Color3.fromRGB(0, 102, 204),
 
       ToggleBackground = Color3.fromRGB(240, 240, 240),
-      ToggleEnabled = Color3.fromRGB(65, 105, 225),
-      ToggleDisabled = Color3.fromRGB(170, 170, 170),
-      ToggleEnabledStroke = Color3.fromRGB(65, 105, 225),
-      ToggleDisabledStroke = Color3.fromRGB(130, 130, 130),
-      ToggleEnabledOuterStroke = Color3.fromRGB(210, 210, 210),
-      ToggleDisabledOuterStroke = Color3.fromRGB(180, 180, 180),
+      ToggleEnabled = Color3.fromRGB(0, 102, 204),
+      ToggleDisabled = Color3.fromRGB(180, 180, 180),
+      ToggleEnabledStroke = Color3.fromRGB(0, 102, 204),
+      ToggleDisabledStroke = Color3.fromRGB(150, 150, 150),
+      ToggleEnabledOuterStroke = Color3.fromRGB(0, 102, 204),
+      ToggleDisabledOuterStroke = Color3.fromRGB(120, 120, 120),
 
-      DropdownSelected = Color3.fromRGB(245, 245, 245),
-      DropdownUnselected = Color3.fromRGB(230, 230, 230),
+      DropdownSelected = Color3.fromRGB(250, 250, 250),
+      DropdownUnselected = Color3.fromRGB(240, 240, 240),
 
-      InputBackground = Color3.fromRGB(245, 245, 245),
-      InputStroke = Color3.fromRGB(210, 210, 210),
+      InputBackground = Color3.fromRGB(255, 255, 255),
+      InputStroke = Color3.fromRGB(200, 200, 200),
       PlaceholderColor = Color3.fromRGB(150, 150, 150)
    },
    ConfigurationSaving = {
@@ -52,9 +52,9 @@ local Window = Rayfield:CreateWindow({
    },
    KeySystem = true,
    KeySettings = {
-      Title = "Untitled",
+      Title = "2tuff cheats",
       Subtitle = "Key System",
-      Note = "No method of obtaining the key is provided",
+      Note = "Enter key to continue",
       FileName = "KeySystem",
       SaveKey = true,
       GrabKeyFromSite = false,
@@ -98,7 +98,7 @@ PlayerTab:CreateSlider({
       end
       applyJumpPower()
       plr.CharacterAdded:Connect(function()
-         task.wait(0.5)
+         wait(0.5)
          applyJumpPower()
       end)
    end,
@@ -117,10 +117,7 @@ PlayerTab:CreateButton({
       local connection
 
       Tool.Equipped:Connect(function()
-         if connection then
-            connection:Disconnect()
-         end
-
+         if connection then connection:Disconnect() end
          connection = mouse.Button1Down:Connect(function()
             local char = player.Character
             local hrp = char and char:FindFirstChild("HumanoidRootPart")
@@ -131,10 +128,7 @@ PlayerTab:CreateButton({
       end)
 
       Tool.Unequipped:Connect(function()
-         if connection then
-            connection:Disconnect()
-            connection = nil
-         end
+         if connection then connection:Disconnect() end
       end)
 
       Tool.Parent = player.Backpack
@@ -168,7 +162,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
    if input.KeyCode == Enum.KeyCode.R and invisibilityEnabled then
       local char = LocalPlayer.Character
       if not char then return end
-
       local hrp = char:FindFirstChild("HumanoidRootPart")
       if not hrp then return end
 
