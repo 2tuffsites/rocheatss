@@ -42,7 +42,6 @@ PlayerTab:CreateSlider({
    end,
 })
 
--- Jump Power Slider
 PlayerTab:CreateSlider({
    Name = "Jump Power",
    Range = {50, 500},
@@ -100,8 +99,6 @@ PlayerTab:CreateButton({
       Tool.Parent = game.Players.LocalPlayer.Backpack
    end,
 })
-
--- Teleport To Player Dropdown (auto-updating)
 local tpDropdown = PlayerTab:CreateDropdown({
    Name = "Teleport To Player",
    Options = {},
@@ -131,8 +128,6 @@ local tpDropdown = PlayerTab:CreateDropdown({
       end
    end
 })
-
--- Update player list automatically
 local function updatePlayerList()
    local list = {}
    for _, p in ipairs(game.Players:GetPlayers()) do
@@ -147,7 +142,6 @@ game.Players.PlayerAdded:Connect(updatePlayerList)
 game.Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
--- Infinite Zoom
 PlayerTab:CreateButton({
    Name = "Infinite Zoom",
    Callback = function()
