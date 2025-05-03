@@ -203,3 +203,13 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
       end
    end
 end)
+-- ✅ Misc Tab
+local MiscTab = Window:CreateTab("Misc", 4483362458)
+
+-- ✅ Infinite Yield Loader Button
+MiscTab:CreateButton({
+   Name = "Load Infinite Yield",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+   end,
+})
