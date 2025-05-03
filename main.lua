@@ -5,7 +5,51 @@ local Window = Rayfield:CreateWindow({
    Icon = 0,
    LoadingTitle = "cheats brah",
    LoadingSubtitle = "by luc",
-   Theme = "Dark Blue",
+   Theme = "-- Replace the Theme section with your new theme here
+local customTheme = {
+    TextColor = Color3.fromRGB(0, 47, 255),  -- Royal blue text color
+    Background = Color3.fromRGB(0, 0, 0),  -- Black background
+    Topbar = Color3.fromRGB(255, 255, 255),  -- White topbar
+    Shadow = Color3.fromRGB(20, 20, 20),  -- Subtle shadow (black)
+
+    NotificationBackground = Color3.fromRGB(0, 0, 0),  -- Black for notifications
+    NotificationActionsBackground = Color3.fromRGB(230, 230, 230),  -- Light grey for notification actions
+
+    TabBackground = Color3.fromRGB(0, 0, 0),  -- Black tab background
+    TabStroke = Color3.fromRGB(85, 85, 85),  -- Darker grey stroke for tabs
+    TabBackgroundSelected = Color3.fromRGB(0, 47, 255),  -- Royal blue for selected tab background
+    TabTextColor = Color3.fromRGB(0, 47, 255),  -- Royal blue text for tabs
+    SelectedTabTextColor = Color3.fromRGB(255, 255, 255),  -- White for selected tab text
+
+    ElementBackground = Color3.fromRGB(25, 25, 25),  -- Dark grey elements
+    ElementBackgroundHover = Color3.fromRGB(40, 40, 40),  -- Slightly lighter grey when hovered
+    SecondaryElementBackground = Color3.fromRGB(0, 0, 0),  -- Black for secondary elements
+    ElementStroke = Color3.fromRGB(50, 50, 50),  -- Dark grey strokes for elements
+    SecondaryElementStroke = Color3.fromRGB(40, 40, 40),  -- Slightly lighter strokes
+
+    SliderBackground = Color3.fromRGB(0, 47, 255),  -- Royal blue slider background
+    SliderProgress = Color3.fromRGB(0, 47, 255),  -- Royal blue progress
+    SliderStroke = Color3.fromRGB(0, 63, 255),  -- Lighter royal blue stroke
+
+    ToggleBackground = Color3.fromRGB(30, 30, 30),  -- Dark background for toggles
+    ToggleEnabled = Color3.fromRGB(0, 146, 214),  -- Bright blue for toggle enabled
+    ToggleDisabled = Color3.fromRGB(100, 100, 100),  -- Grey for toggle disabled
+    ToggleEnabledStroke = Color3.fromRGB(0, 170, 255),  -- Lighter blue for enabled toggle stroke
+    ToggleDisabledStroke = Color3.fromRGB(125, 125, 125),  -- Lighter grey for disabled toggle stroke
+    ToggleEnabledOuterStroke = Color3.fromRGB(100, 100, 100),  -- Outer stroke for enabled toggle
+    ToggleDisabledOuterStroke = Color3.fromRGB(65, 65, 65),  -- Outer stroke for disabled toggle
+
+    DropdownSelected = Color3.fromRGB(40, 40, 40),  -- Dark grey for dropdown selected
+    DropdownUnselected = Color3.fromRGB(30, 30, 30),  -- Slightly lighter grey for unselected dropdown items
+
+    InputBackground = Color3.fromRGB(30, 30, 30),  -- Dark grey background for input fields
+    InputStroke = Color3.fromRGB(65, 65, 65),  -- Lighter grey stroke for input fields
+    PlaceholderColor = Color3.fromRGB(178, 178, 178)  -- Placeholder text color (light grey)
+}
+
+-- Apply custom theme to the window
+Window:SetTheme(customTheme)
+",
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil,
@@ -195,48 +239,3 @@ local Window = Rayfield:CreateWindow({
       Key = {"Rahh"}
    }
 })
-
--- Replace the Theme section with your new theme here
-local customTheme = {
-    TextColor = Color3.fromRGB(0, 47, 255),  -- Royal blue text color
-    Background = Color3.fromRGB(0, 0, 0),  -- Black background
-    Topbar = Color3.fromRGB(255, 255, 255),  -- White topbar
-    Shadow = Color3.fromRGB(20, 20, 20),  -- Subtle shadow (black)
-
-    NotificationBackground = Color3.fromRGB(0, 0, 0),  -- Black for notifications
-    NotificationActionsBackground = Color3.fromRGB(230, 230, 230),  -- Light grey for notification actions
-
-    TabBackground = Color3.fromRGB(0, 0, 0),  -- Black tab background
-    TabStroke = Color3.fromRGB(85, 85, 85),  -- Darker grey stroke for tabs
-    TabBackgroundSelected = Color3.fromRGB(0, 47, 255),  -- Royal blue for selected tab background
-    TabTextColor = Color3.fromRGB(0, 47, 255),  -- Royal blue text for tabs
-    SelectedTabTextColor = Color3.fromRGB(255, 255, 255),  -- White for selected tab text
-
-    ElementBackground = Color3.fromRGB(25, 25, 25),  -- Dark grey elements
-    ElementBackgroundHover = Color3.fromRGB(40, 40, 40),  -- Slightly lighter grey when hovered
-    SecondaryElementBackground = Color3.fromRGB(0, 0, 0),  -- Black for secondary elements
-    ElementStroke = Color3.fromRGB(50, 50, 50),  -- Dark grey strokes for elements
-    SecondaryElementStroke = Color3.fromRGB(40, 40, 40),  -- Slightly lighter strokes
-
-    SliderBackground = Color3.fromRGB(0, 47, 255),  -- Royal blue slider background
-    SliderProgress = Color3.fromRGB(0, 47, 255),  -- Royal blue progress
-    SliderStroke = Color3.fromRGB(0, 63, 255),  -- Lighter royal blue stroke
-
-    ToggleBackground = Color3.fromRGB(30, 30, 30),  -- Dark background for toggles
-    ToggleEnabled = Color3.fromRGB(0, 146, 214),  -- Bright blue for toggle enabled
-    ToggleDisabled = Color3.fromRGB(100, 100, 100),  -- Grey for toggle disabled
-    ToggleEnabledStroke = Color3.fromRGB(0, 170, 255),  -- Lighter blue for enabled toggle stroke
-    ToggleDisabledStroke = Color3.fromRGB(125, 125, 125),  -- Lighter grey for disabled toggle stroke
-    ToggleEnabledOuterStroke = Color3.fromRGB(100, 100, 100),  -- Outer stroke for enabled toggle
-    ToggleDisabledOuterStroke = Color3.fromRGB(65, 65, 65),  -- Outer stroke for disabled toggle
-
-    DropdownSelected = Color3.fromRGB(40, 40, 40),  -- Dark grey for dropdown selected
-    DropdownUnselected = Color3.fromRGB(30, 30, 30),  -- Slightly lighter grey for unselected dropdown items
-
-    InputBackground = Color3.fromRGB(30, 30, 30),  -- Dark grey background for input fields
-    InputStroke = Color3.fromRGB(65, 65, 65),  -- Lighter grey stroke for input fields
-    PlaceholderColor = Color3.fromRGB(178, 178, 178)  -- Placeholder text color (light grey)
-}
-
--- Apply custom theme to the window
-Window:SetTheme(customTheme)
