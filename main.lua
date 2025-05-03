@@ -8,7 +8,7 @@ local Window = Rayfield:CreateWindow({
    Theme = {
       TextColor = Color3.fromRGB(0, 102, 204), -- Royal blue text
       Background = Color3.fromRGB(255, 255, 255), -- White background
-      Topbar = Color3.fromRGB(0, 102, 204), -- Royal blue topbar
+      Topbar = Color3.fromRGB(255, 255, 255), -- White topbar
       Shadow = Color3.fromRGB(200, 200, 200),
 
       NotificationBackground = Color3.fromRGB(230, 230, 230),
