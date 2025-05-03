@@ -81,7 +81,10 @@ PlayerTab:CreateButton({
       local connection
 
       Tool.Equipped:Connect(function()
-         if connection then connection:Disconnect() end
+         if connection then
+            connection:Disconnect()
+         end
+
          connection = mouse.Button1Down:Connect(function()
             local char = player.Character
             local hrp = char and char:FindFirstChild("HumanoidRootPart")
@@ -131,18 +134,16 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
    if input.KeyCode == Enum.KeyCode.R and invisibilityEnabled then
       local char = LocalPlayer.Character
       if not char then return end
+
       local hrp = char:FindFirstChild("HumanoidRootPart")
       if not hrp then return end
 
       if not isInvisible then
          originalHRPParent = hrp.Parent
-         hrp.Parent = nil
+         hrp.Parent = nil -- Server-invisible method
          for _, part in ipairs(char:GetDescendants()) do
             if part:IsA("BasePart") then
                part.Transparency = 0.7
-               if part:FindFirstChildOfClass("SelectionBox") then
-                  part:FindFirstChildOfClass("SelectionBox"):Destroy()
-               end
             elseif part:IsA("Decal") or part:IsA("Texture") then
                part:Destroy()
             end
@@ -155,9 +156,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
          for _, part in ipairs(char:GetDescendants()) do
             if part:IsA("BasePart") then
                part.Transparency = 0
-               if part:FindFirstChildOfClass("SelectionBox") then
-                  part:FindFirstChildOfClass("SelectionBox"):Destroy()
-               end
             end
          end
          isInvisible = false
@@ -168,7 +166,7 @@ end)
 -- Misc Tab
 local MiscTab = Window:CreateTab("Misc", 4483362458)
 
--- Infinite Yield Button
+-- Infinite Yield Button (FE v6.3.1)
 MiscTab:CreateButton({
    Name = "Infinite Yield",
    Callback = function()
