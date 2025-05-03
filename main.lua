@@ -42,7 +42,6 @@ PlayerTab:CreateSlider({
    end,
 })
 
--- Jump Power Slider
 PlayerTab:CreateSlider({
    Name = "Jump Power",
    Range = {50, 500},
@@ -67,7 +66,7 @@ PlayerTab:CreateSlider({
    end,
 })
 
--- TP Tool Button (Smooth TP)
+-- TP Tool Button
 PlayerTab:CreateButton({
    Name = "TP Tool",
    Callback = function()
@@ -90,6 +89,7 @@ PlayerTab:CreateButton({
             local hrp = char and char:FindFirstChild("HumanoidRootPart")
             if hrp then
                local targetPos = mouse.Hit.Position + Vector3.new(0, 5, 0)
+
                local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
                local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(targetPos)})
                tween:Play()
@@ -113,11 +113,27 @@ PlayerTab:CreateButton({
    end,
 })
 
--- Invisibility Toggle with R Keybind
+-- Misc Tab
+local MiscTab = Window:CreateTab("Misc", 4483362458)
+
+-- Infinite Yield Loader Button
+MiscTab:CreateButton({
+   Name = "Load Infinite Yield",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+   end,
+})
+
+-- Invisibility Toggle
 local invisibleToggleEnabled = false
 local isInvisible = false
 local UserInputService = game:GetService("UserInputService")
 
+-- Tables to keep track of hidden parts and accessories
+local hiddenParts = {}
+local hiddenAccessories = {}
+
+-- Function to make player invisible
 local function makeInvisible()
    local character = game.Players.LocalPlayer.Character
    if not character then return end
@@ -126,26 +142,34 @@ local function makeInvisible()
       if part:IsA("BasePart") then
          part.Transparency = 0.7
          part.CanCollide = false
+         hiddenParts[part] = true  -- Track the hidden part
       elseif part:IsA("Decal") or part:IsA("Texture") or part:IsA("Accessory") then
-         part:Destroy()
+         part.Enabled = false  -- Hide decals, textures, and accessories instead of destroying
+         hiddenAccessories[part] = true  -- Track the hidden accessory
       end
    end
    isInvisible = true
 end
 
+-- Function to make player visible again
 local function makeVisible()
    local character = game.Players.LocalPlayer.Character
    if not character then return end
 
    for _, part in ipairs(character:GetDescendants()) do
-      if part:IsA("BasePart") then
+      if part:IsA("BasePart") and hiddenParts[part] then
          part.Transparency = 0
          part.CanCollide = true
+         hiddenParts[part] = nil  -- Remove from hidden parts tracking
+      elseif part:IsA("Decal") or part:IsA("Texture") or part:IsA("Accessory") and hiddenAccessories[part] then
+         part.Enabled = true  -- Restore decals, textures, and accessories
+         hiddenAccessories[part] = nil  -- Remove from hidden accessories tracking
       end
    end
    isInvisible = false
 end
 
+-- Rayfield toggle to enable/disable invisibility mode
 PlayerTab:CreateToggle({
    Name = "Invisible Toggle (Press R)",
    CurrentValue = false,
@@ -155,6 +179,7 @@ PlayerTab:CreateToggle({
    end,
 })
 
+-- Keybind logic to switch invisibility on/off
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
    if gameProcessed then return end
    if input.KeyCode == Enum.KeyCode.R and invisibleToggleEnabled then
@@ -166,12 +191,3 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
    end
 end)
 
--- Misc Tab
-local MiscTab = Window:CreateTab("Misc", 4483362458)
-
-MiscTab:CreateButton({
-   Name = "Load Infinite Yield",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-   end,
-})
