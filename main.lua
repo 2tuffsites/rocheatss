@@ -240,3 +240,63 @@ MiscTab:CreateButton({
       end
    end,
 })
+-- Visuals Tab
+local VisualsTab = Window:CreateTab("Visuals", 4483362458)
+
+-- Skybox Picker
+VisualsTab:CreateDropdown({
+   Name = "Skybox",
+   Options = {"Skybox1", "Skybox2", "Skybox3"}, -- Replace with your custom skybox names
+   CurrentOption = "Skybox1", 
+   Flag = "SkyboxPicker",
+   Callback = function(selectedSkybox)
+      if selectedSkybox == "Skybox1" then
+         game.Lighting.Skybox = "rbxassetid://Skybox1ID" -- Replace with asset ID
+      elseif selectedSkybox == "Skybox2" then
+         game.Lighting.Skybox = "rbxassetid://Skybox2ID" -- Replace with asset ID
+      elseif selectedSkybox == "Skybox3" then
+         game.Lighting.Skybox = "rbxassetid://Skybox3ID" -- Replace with asset ID
+      end
+   end,
+})
+
+-- Lighting Customization
+VisualsTab:CreateSlider({
+   Name = "Brightness",
+   Range = {0, 10},
+   Increment = 0.1,
+   Suffix = "Brightness",
+   CurrentValue = 2,
+   Flag = "BrightnessSlider",
+   Callback = function(Value)
+      game.Lighting.Brightness = Value
+   end,
+})
+
+VisualsTab:CreateColorPicker({
+   Name = "Ambient Color",
+   Flag = "AmbientColorPicker",
+   Color = Color3.fromRGB(255, 255, 255),
+   Callback = function(Color)
+      game.Lighting.Ambient = Color
+   end,
+})
+
+-- Color Filter
+VisualsTab:CreateToggle({
+   Name = "Color Filter",
+   CurrentValue = false,
+   Flag = "ColorFilterToggle",
+   Callback = function(Value)
+      if Value then
+         local colorCorrection = Instance.new("ColorCorrectionEffect")
+         colorCorrection.Saturation = -1 -- Adjust saturation for a black and white effect, or tweak as needed
+         colorCorrection.Parent = game.Lighting
+      else
+         local existingEffect = game.Lighting:FindFirstChildOfClass("ColorCorrectionEffect")
+         if existingEffect then
+            existingEffect:Destroy()
+         end
+      end
+   end,
+})
