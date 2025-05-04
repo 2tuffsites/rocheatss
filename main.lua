@@ -141,23 +141,6 @@ PlayerTab:CreateButton({
       game.Players.LocalPlayer.CameraMaxZoomDistance = math.huge
    end,
 })
-
--- Invisible Toggle (Press R)
-local UserInputService = game:GetService("UserInputService")
-local LocalPlayer = game.Players.LocalPlayer
-local isInvisible = false
-local invisibilityEnabled = false
-local originalHRPParent = nil
-
-PlayerTab:CreateToggle({
-   Name = "Invisible Toggle (Press R)",
-   CurrentValue = false,
-   Flag = "InvisibleToggle",
-   Callback = function(Value)
-      invisibilityEnabled = Value
-   end,
-})
-
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
    if gameProcessed then return end
    if input.KeyCode == Enum.KeyCode.R and invisibilityEnabled then
