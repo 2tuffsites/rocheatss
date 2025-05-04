@@ -241,50 +241,24 @@ MiscTab:CreateButton({
    end,
 })
 -- Visuals Tab
+-- Visuals Tab
 local VisualsTab = Window:CreateTab("Visuals", 4483362458)
 
-VisualsTab:CreateDropdown({
-   Name = "Skybox",
-   Options = {"Black Void", "Skybox 2", "Skybox 3", "Skybox 4", "Skybox 5"},
-   CurrentOption = "Black Void",
-   Flag = "SkyboxDropdown",
-   Callback = function(Option)
-      local lighting = game:GetService("Lighting")
-      
-      if Option == "Black Void" then
-         lighting.Skybox = "rbxassetid://INSERT_YOUR_BLACK_VOID_SKYBOX_ID" -- Replace with actual asset ID
-         lighting.Ambient = Color3.fromRGB(0, 0, 0) -- Set ambient light to black
-         lighting.OutdoorAmbient = Color3.fromRGB(0, 0, 0) -- Set outdoor ambient light to black
-         lighting.FogColor = Color3.fromRGB(0, 0, 0) -- Optional: Set fog to black if desired
-         lighting.FogEnd = 10000 -- Optional: Increase fog range to fully cover the void
-      elseif Option == "Skybox 2" then
-         lighting.Skybox = "rbxassetid://skybox_2_asset_id"
-         lighting.Ambient = Color3.fromRGB(255, 255, 255)
-         lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
-      elseif Option == "Skybox 3" then
-         lighting.Skybox = "rbxassetid://skybox_3_asset_id"
-         lighting.Ambient = Color3.fromRGB(200, 200, 200)
-         lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 200)
-      elseif Option == "Skybox 4" then
-         lighting.Skybox = "rbxassetid://skybox_4_asset_id"
-         lighting.Ambient = Color3.fromRGB(150, 150, 150)
-         lighting.OutdoorAmbient = Color3.fromRGB(150, 150, 150)
-      elseif Option == "Skybox 5" then
-         lighting.Skybox = "rbxassetid://skybox_5_asset_id"
-         lighting.Ambient = Color3.fromRGB(100, 100, 100)
-         lighting.OutdoorAmbient = Color3.fromRGB(100, 100, 100)
-      end
-   end
-})
-
 VisualsTab:CreateButton({
-   Name = "Reset Skybox",
+   Name = "Black Void",
    Callback = function()
       local lighting = game:GetService("Lighting")
-      lighting.Skybox = nil
-      lighting.Ambient = Color3.fromRGB(255, 255, 255) -- Reset ambient light
-      lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255) -- Reset outdoor ambient
-      lighting.FogColor = Color3.fromRGB(255, 255, 255) -- Reset fog color
-      lighting.FogEnd = 100000 -- Reset fog range
-   end
+      
+      -- Set up the black skybox
+      lighting.Sky.SkyboxBk = "rbxassetid://0"  -- Black
+      lighting.Sky.SkyboxDn = "rbxassetid://0"  -- Black
+      lighting.Sky.SkyboxFt = "rbxassetid://0"  -- Black
+      lighting.Sky.SkyboxLf = "rbxassetid://0"  -- Black
+      lighting.Sky.SkyboxRt = "rbxassetid://0"  -- Black
+      lighting.Sky.SkyboxUp = "rbxassetid://0"  -- Black
+      
+      -- Set the ambient and other settings to make the environment appear black
+      lighting.Ambient = Color3.fromRGB(0, 0, 0)
+      lighting.OutdoorAmbient = Color3.fromRGB(0, 0, 0)
+   end,
 })
