@@ -1,10 +1,8 @@
-
-
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "2tuff Menu",
-   Icon = 0,
+   Icon = nil, -- Fixed from 0 to nil
    LoadingTitle = "Hey! no cheating!{jokin}",
    LoadingSubtitle = "by luc",
    Theme = {
@@ -12,26 +10,21 @@ local Window = Rayfield:CreateWindow({
       Background = Color3.fromRGB(255, 255, 255), -- White background
       Topbar = Color3.fromRGB(255, 255, 255), -- White topbar
       Shadow = Color3.fromRGB(200, 200, 200),
-
       NotificationBackground = Color3.fromRGB(230, 230, 230),
       NotificationActionsBackground = Color3.fromRGB(255, 255, 255),
-
       TabBackground = Color3.fromRGB(220, 220, 220),
       TabStroke = Color3.fromRGB(180, 180, 180),
       TabBackgroundSelected = Color3.fromRGB(255, 255, 255),
       TabTextColor = Color3.fromRGB(0, 102, 204),
       SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
-
       ElementBackground = Color3.fromRGB(245, 245, 245),
       ElementBackgroundHover = Color3.fromRGB(240, 240, 240),
       SecondaryElementBackground = Color3.fromRGB(230, 230, 230),
       ElementStroke = Color3.fromRGB(200, 200, 200),
       SecondaryElementStroke = Color3.fromRGB(180, 180, 180),
-              
       SliderBackground = Color3.fromRGB(255, 255, 255),
       SliderProgress = Color3.fromRGB(0, 102, 204),
       SliderStroke = Color3.fromRGB(0, 102, 204),
-
       ToggleBackground = Color3.fromRGB(240, 240, 240),
       ToggleEnabled = Color3.fromRGB(0, 102, 204),
       ToggleDisabled = Color3.fromRGB(180, 180, 180),
@@ -39,10 +32,8 @@ local Window = Rayfield:CreateWindow({
       ToggleDisabledStroke = Color3.fromRGB(150, 150, 150),
       ToggleEnabledOuterStroke = Color3.fromRGB(0, 102, 204),
       ToggleDisabledOuterStroke = Color3.fromRGB(120, 120, 120),
-
       DropdownSelected = Color3.fromRGB(250, 250, 250),
       DropdownUnselected = Color3.fromRGB(240, 240, 240),
-
       InputBackground = Color3.fromRGB(255, 255, 255),
       InputStroke = Color3.fromRGB(200, 200, 200),
       PlaceholderColor = Color3.fromRGB(150, 150, 150)
@@ -201,6 +192,7 @@ MiscTab:CreateButton({
       loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
    end,
 })
+
 -- Baseplate and Color Picker
 local selectedColor = Color3.fromRGB(255, 255, 255)
 local baseplate = nil
