@@ -315,3 +315,53 @@ LilScriptsTab:CreateButton({
 		end)
 	end
 })
+-- Teleports Tab
+local TeleportsTab = Window:CreateTab("Teleports", 4483362458)
+
+local isMicUp = game.PlaceId == 6242885034 -- Replace with the actual Mic Up PlaceId if needed
+if isMicUp then
+    local TpDropdown = TeleportsTab:CreateDropdown({
+        Name = "Locations",
+        Options = {"Spawn 1", "Spawn 2", "Spawn 3", "Circle Booth", "Avatar-UI", "Private Room (Inside)", "Bathrooms", "Chill Spot", "Picnic", "Middle Room (Tent)", "Tower (Float Up Part)", "Tower (Top)", "Tower (Highest Part)", "Donut Shop", "Above Relaxing Room", "Note Board"},
+        CurrentOption = "Spawn 1",
+        Flag = "TpDropdown",
+        Callback = function(Option)
+            -- nothing on select, handled in button
+        end,
+    })
+
+    local locations = {
+        ["Spawn 1"] = CFrame.new(-0.000122070313, 4.99999857, 0.000122070313),
+        ["Spawn 2"] = CFrame.new(166.64, 4.99999857, 195.381),
+        ["Spawn 3"] = CFrame.new(143.6, 4.99999857, -33.09),
+        ["Circle Booth"] = CFrame.new(26.7397423, 7.81395245, 86.7164536),
+        ["Avatar-UI"] = CFrame.new(-129, 4.9, 82),
+        ["Private Room (Inside)"] = CFrame.new(4220.82275, 2.76511836, 60.7681046),
+        ["Bathrooms"] = CFrame.new(-72.3955917, 5.09832525, 93.0914459),
+        ["Chill Spot"] = CFrame.new(228.970184, 5.75081444, -21.5613441),
+        ["Picnic"] = CFrame.new(85.846756, 3.61196709, -29.8345909),
+        ["Middle Room (Tent)"] = CFrame.new(70.9464493, 5.62692404, 24.2968006),
+        ["Tower (Float Up Part)"] = CFrame.new(61.3288841, 72.0192184, 215.731613),
+        ["Tower (Top)"] = CFrame.new(63.2298126, 284.407227, 193.529007),
+        ["Tower (Highest Part)"] = CFrame.new(58.0468788, 313.312622, 225.215027),
+        ["Donut Shop"] = CFrame.new(-80.8301239, 3.1662631, -82.6656799),
+        ["Above Relaxing Room"] = CFrame.new(-97.4412308, 24.4840164, 121.394676),
+        ["Note Board"] = CFrame.new(58.6107864, 4.99999857, 245.690369)
+    }
+
+    TeleportsTab:CreateButton({
+        Name = "Teleport",
+        Callback = function()
+            local selectedLocation = TpDropdown.CurrentOption
+            local targetCFrame = locations[selectedLocation]
+            if targetCFrame then
+                local HumanoidRootPart = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if HumanoidRootPart then
+                    HumanoidRootPart.CFrame = targetCFrame
+                end
+            else
+                warn("Invalid location selected.")
+            end
+        end,
+    })
+end
