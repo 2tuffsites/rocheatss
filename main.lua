@@ -135,54 +135,6 @@ PlayerTab:CreateButton({
    end,
 })
 
-local UserInputService = game:GetService("UserInputService")
-local LocalPlayer = game.Players.LocalPlayer
-local isInvisible = false
-local invisibilityEnabled = false
-local originalHRPParent = nil
-
-PlayerTab:CreateToggle({
-   Name = "Invisible Toggle (Press R)",
-   CurrentValue = false,
-   Flag = "InvisibleToggle",
-   Callback = function(Value)
-      invisibilityEnabled = Value
-   end,
-})
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-   if gameProcessed then return end
-   if input.KeyCode == Enum.KeyCode.R and invisibilityEnabled then
-      local char = LocalPlayer.Character
-      if not char then return end
-      local hrp = char:FindFirstChild("HumanoidRootPart")
-      if not hrp then return end
-
-      if not isInvisible then
-         originalHRPParent = hrp.Parent
-         hrp.Parent = nil
-         for _, part in ipairs(char:GetDescendants()) do
-            if part:IsA("BasePart") then
-               part.Transparency = 0.7
-            elseif part:IsA("Decal") or part:IsA("Texture") then
-               part:Destroy()
-            end
-         end
-         isInvisible = true
-      else
-         if originalHRPParent then
-            hrp.Parent = originalHRPParent
-         end
-         for _, part in ipairs(char:GetDescendants()) do
-            if part:IsA("BasePart") then
-               part.Transparency = 0
-            end
-         end
-         isInvisible = false
-      end
-   end
-end)
-
 -- Misc Tab
 local MiscTab = Window:CreateTab("Misc", 4483362458)
 
