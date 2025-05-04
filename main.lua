@@ -207,7 +207,7 @@ MiscTab:CreateToggle({
             baseplate = Instance.new("Part")
             baseplate.Size = Vector3.new(10000, 0, 10000)
             baseplate.Anchored = true
-            baseplate.Position = Vector3.new(0, 1, 0)
+            baseplate.Position = Vector3.new(0, 0, 0)
             baseplate.Color = selectedColor
             baseplate.Material = Enum.Material.SmoothPlastic
             baseplate.Name = "CustomBaseplate"
