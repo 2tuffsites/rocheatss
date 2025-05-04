@@ -317,3 +317,134 @@ if isMicUp then
         end,
     })
 end
+-- Create the "Rejoin VC" tab under Rayfield
+local VC_Tab = Window:CreateTab("Rejoin VC", 4483362458) -- Replace icon ID if needed
+
+local vc_service = game:GetService("VoiceChatService")
+local enabled_vc = vc_service:IsVoiceEnabledForUserIdAsync(game.Players.LocalPlayer.UserId)
+local vc_inter = game:GetService("VoiceChatInternal")
+local retryCooldown = 3
+
+VC_Tab:AddToggle("VcBanProtectionToggle", {
+    Title = "VC Ban Protection", 
+    Description = "Prevents you from getting banned from voice chat",
+    Default = true,
+    Callback = function(state)
+        if state then
+            if getgenv().voiceChat_Check then
+                warn("Voice Chat already initialized.")
+            else
+                getgenv().voiceChat_Check = true
+                local reconnecting = false
+                local function onVoiceChatStateChanged(oldState, newState)
+                    if newState == Enum.VoiceChatState.Ended and not reconnecting then
+                        reconnecting = true
+                        Fluent:Notify({
+                            Title = "Notification",
+                            Content = "VC Ban Detected",
+                            Duration = 5
+                        })
+                        task.spawn(function()
+                            wait(retryCooldown)
+                            local success, err = pcall(function()
+                                vc_service:joinVoice()
+                            end)
+                            if success then
+                                Fluent:Notify({
+                                    Title = "Notification",
+                                    Content = "VC Successfully Unbanned",
+                                    Duration = 5
+                                })
+                                reconnecting = false
+                            else
+                                warn("Error while rejoining voice chat:", err)
+                                reconnecting = false
+                            end
+                        end)
+                    end
+                end
+
+                vc_inter.StateChanged:Connect(onVoiceChatStateChanged)
+            end
+        else
+            getgenv().voiceChat_Check = false
+        end
+    end 
+})
+
+if enabled_vc then
+    vc_service:joinVoice()
+    Fluent:Notify({
+        Title = "Notification",
+        Content = "Voice Chat has been successfully initialized.",
+        Duration = 5
+    })
+end
+
+VC_Tab:AddButton({
+    Title = "Force VC Unban",
+    Description = "Force reconnect to voice chat if you are banned",
+    Callback = function()
+        vc_service:joinVoice()
+    end
+})
+local Players = game:GetService("Players")
+local StarterPlayer = game:GetService("StarterPlayer")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+
+-- Animation ID library (change as needed)
+local AnimPackages = {
+    ["Elder"] = 845398858,
+    ["Stylish"] = 6161561190,
+    ["Mage"] = 6115362550,
+    ["Knight"] = 6123604030,
+    ["Zombie"] = 6160882111,
+    ["Astronaut"] = 891621366,
+    ["Bubbly"] = 6160494007,
+    ["Levitation"] = 6160067783,
+    ["Ninja"] = 656119721,
+    ["Robot"] = 6160882119,
+    ["Superhero"] = 6161047069,
+    ["Toy"] = 782841498,
+}
+
+-- Utility to apply animations
+local function applyAnimationPack(assetId)
+    local function replaceAnimation(animName, animId)
+        local anim = Character:FindFirstChild(animName)
+        if anim and anim:IsA("Animation") then
+            anim.AnimationId = "rbxassetid://" .. tostring(animId)
+        end
+    end
+
+    local animationIds = {
+        ["walk"] = assetId + 1,
+        ["run"] = assetId + 2,
+        ["jump"] = assetId + 3,
+        ["idle"] = assetId + 4,
+        ["fall"] = assetId + 5,
+        ["climb"] = assetId + 6,
+        ["swim"] = assetId + 7,
+    }
+
+    for animName, animId in pairs(animationIds) do
+        replaceAnimation(animName, animId)
+    end
+end
+
+-- Create the Animations tab
+local AnimationsTab = Window:CreateTab("Animations", 1234567890) -- Use your preferred icon ID
+
+-- Dropdown for Animation Packs
+AnimationsTab:CreateDropdown({
+    Name = "Select Animation Pack",
+    Options = table.keys(AnimPackages),
+    CurrentOption = "",
+    Callback = function(selected)
+        local id = AnimPackages[selected]
+        if id then
+            applyAnimationPack(id)
+        end
+    end
+})
