@@ -231,3 +231,53 @@ MiscTab:CreateButton({
       end
    end,
 })
+-- Save & restore Rayfield UI position
+task.spawn(function()
+    repeat task.wait() until game:GetService("CoreGui"):FindFirstChild("Rayfield")
+    
+    local Topbar = game:GetService("CoreGui").Rayfield:FindFirstChild("Topbar", true)
+    if not Topbar then return end
+
+    local UIS = game:GetService("UserInputService")
+    local dragInput, dragStart, startPos
+
+    local function savePos()
+        if Topbar and Topbar.Parent then
+            writefile("2tuff_ui_pos.txt", tostring(Topbar.Parent.Position))
+        end
+    end
+
+    local function loadPos()
+        if isfile("2tuff_ui_pos.txt") then
+            local posStr = readfile("2tuff_ui_pos.txt")
+            local x, y = posStr:match("UDim2.new%(([^,]+),[^,]+,([^,]+)")
+            if x and y then
+                Topbar.Parent.Position = UDim2.new(tonumber(x), 0, tonumber(y), 0)
+            end
+        end
+    end
+
+    loadPos()
+
+    Topbar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragStart = input.Position
+            startPos = Topbar.Parent.Position
+
+            dragInput = input
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if input == dragInput and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            Topbar.Parent.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+            savePos()
+        end
+    end)
+end)
