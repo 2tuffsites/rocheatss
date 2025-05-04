@@ -267,145 +267,155 @@ local LilScriptsTab = Window:CreateTab("Lil Scripts", 4483362458)
 
 -- Add the "Jerk Off" script as a button inside the "Lil Scripts" tab
 LilScriptsTab:CreateButton({
-   Name = "Activate Jerk Off Script",
-   Callback = function()
-      local JerkOffSpeed = getgenv().JERK_OFF_SPEED
-      local KeepOnDeath = getgenv().KEEP_ON_DEATH
+    Name = "Activate Jerk Off Script",
+    Callback = function()
+        print("Button pressed, executing script...")
 
-      --// player defintion
-      local Player = game.Players.LocalPlayer
-      local Character = Player.Character or Player.CharacterAdded:Wait()
-      local Humanoid = Character:WaitForChild("Humanoid", 1)
-      local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart", 1) or Character.PrimaryPart
+        local JerkOffSpeed = getgenv().JERK_OFF_SPEED or 1  -- Default to 1 if not set
+        local KeepOnDeath = getgenv().KEEP_ON_DEATH or false  -- Default to false if not set
 
-      --// check if not R6
-      if not Character:FindFirstChild("Torso") then
-          warn("Must be R6")
-          return
-      end
+        --// player definition
+        local Player = game.Players.LocalPlayer
+        local Character = Player.Character or Player.CharacterAdded:Wait()
+        local Humanoid = Character:WaitForChild("Humanoid", 1)
+        local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart", 1) or Character.PrimaryPart
 
-      --// check if already executed
-      if getgenv().JerkOffExecuted then
-          warn("Already executed")
-          return
-      end
+        --// check if not R6
+        if not Character:FindFirstChild("Torso") then
+            warn("Must be R6")
+            return
+        end
 
-      getgenv().JerkOffExecuted = true
+        --// check if already executed
+        if getgenv().JerkOffExecuted then
+            warn("Already executed")
+            return
+        end
 
-      --// the animations of the script
-      local MAIN_ANIMATIONS = {
-          JERK_OFF = "rbxassetid://99198989",
-          CLOSER_HANDS = "rbxassetid://168086975",
-      }
+        getgenv().JerkOffExecuted = true
 
-      --// this is a boolean named "JerkingOff"🤯
-      local JerkingOff = false
+        --// the animations of the script
+        local MAIN_ANIMATIONS = {
+            JERK_OFF = "rbxassetid://99198989",
+            CLOSER_HANDS = "rbxassetid://168086975",
+        }
 
-      --// making the tool in 
-      local JerkTool = Instance.new("Tool")
-      JerkTool.Name = "Jerk Off"
-      JerkTool.RequiresHandle = false
-      JerkTool.Parent = game:GetService("ReplicatedStorage")
+        --// this is a boolean named "JerkingOff"🤯
+        local JerkingOff = false
 
-      --// on respawn
-      Player.CharacterAdded:Connect(function()
-          --// redefine character on respawn
-          Character = Player.Character
-          Humanoid = Character:WaitForChild("Humanoid", 1)
-          HumanoidRootPart = Character:WaitForChild("HumanoidRootPart", 1) or Character.PrimaryPart
+        --// making the tool in 
+        local JerkTool = Instance.new("Tool")
+        JerkTool.Name = "Jerk Off"
+        JerkTool.RequiresHandle = false
+        JerkTool.Parent = game:GetService("ReplicatedStorage")
 
-          --// tool give
-          if KeepOnDeath then
-              --// clones the tool from replicatedStorage
-              local new_tool = JerkTool:Clone()
-              new_tool.Parent = Player.Backpack
-              
-              --// set JerkingOff to true or false based on if it's equipped
-              new_tool.Equipped:Connect(function()
-                  JerkingOff = true
-              end)
+        --// on respawn
+        Player.CharacterAdded:Connect(function()
+            --// redefine character on respawn
+            Character = Player.Character
+            Humanoid = Character:WaitForChild("Humanoid", 1)
+            HumanoidRootPart = Character:WaitForChild("HumanoidRootPart", 1) or Character.PrimaryPart
 
-              new_tool.Unequipped:Connect(function()
-                  JerkingOff = false
-              end)
-          end
+            --// tool give
+            if KeepOnDeath then
+                --// clones the tool from replicatedStorage
+                local new_tool = JerkTool:Clone()
+                new_tool.Parent = Player.Backpack
+                
+                --// set JerkingOff to true or false based on if it's equipped
+                new_tool.Equipped:Connect(function()
+                    JerkingOff = true
+                    print("Jerk Tool Equipped")
+                end)
 
-          --// disable on death
-          Humanoid.Died:Connect(function()
-              JerkingOff = false
-              if not KeepOnDeath then
-                  getgenv().JerkOffExecuted = false
-              end
-          end)
-      end)
+                new_tool.Unequipped:Connect(function()
+                    JerkingOff = false
+                    print("Jerk Tool Unequipped")
+                end)
+            end
 
-      --// give on execute
-      local new_tool = JerkTool:Clone()
-      new_tool.Parent = Player.Backpack
+            --// disable on death
+            Humanoid.Died:Connect(function()
+                JerkingOff = false
+                if not KeepOnDeath then
+                    getgenv().JerkOffExecuted = false
+                end
+            end)
+        end)
 
-      --// set JerkingOff to true or false based on if it's equipped
-      new_tool.Equipped:Connect(function()
-          JerkingOff = true
-      end)
+        --// give on execute
+        local new_tool = JerkTool:Clone()
+        new_tool.Parent = Player.Backpack
 
-      new_tool.Unequipped:Connect(function()
-          JerkingOff = false
-      end)
+        --// set JerkingOff to true or false based on if it's equipped
+        new_tool.Equipped:Connect(function()
+            JerkingOff = true
+            print("Jerk Tool Equipped")
+        end)
 
-      --// disable on death
-      Humanoid.Died:Connect(function()
-          JerkingOff = false
-          if not KeepOnDeath then
-              getgenv().JerkOffExecuted = false
-          end
-      end)
+        new_tool.Unequipped:Connect(function()
+            JerkingOff = false
+            print("Jerk Tool Unequipped")
+        end)
 
-      --// main loop
-      local jerkoffTrack
-      local closerhandsTrack
-      local setToOriginalValues = true
+        --// disable on death
+        Humanoid.Died:Connect(function()
+            JerkingOff = false
+            if not KeepOnDeath then
+                getgenv().JerkOffExecuted = false
+            end
+        end)
 
-      game:GetService("RunService").RenderStepped:Connect(function()
-          if not Humanoid then
-              return --// exit if Humanoid is not defined
-          end
-          if JerkingOff then
-              setToOriginalValues = true
-              Humanoid.WalkSpeed = 0 --// set walk speed to 0 while jerking off
-              Humanoid.JumpPower = 0 --// set jump power to 0 while jerking off
+        --// main loop
+        local jerkoffTrack
+        local closerhandsTrack
+        local setToOriginalValues = true
 
-              --// check if jerkoffTrack is not playing
-              if not jerkoffTrack then
-                  local anim = Instance.new("Animation")
-                  anim.AnimationId = MAIN_ANIMATIONS.JERK_OFF
-                  jerkoffTrack = Humanoid:LoadAnimation(anim)
-                  jerkoffTrack.Looped = true
-                  jerkoffTrack:Play()
-                  jerkoffTrack:AdjustSpeed(JerkOffSpeed)
-              end
+        game:GetService("RunService").RenderStepped:Connect(function()
+            if not Humanoid then
+                return --// exit if Humanoid is not defined
+            end
+            if JerkingOff then
+                setToOriginalValues = true
+                Humanoid.WalkSpeed = 0 --// set walk speed to 0 while jerking off
+                Humanoid.JumpPower = 0 --// set jump power to 0 while jerking off
+
+                --// check if jerkoffTrack is not playing
+                if not jerkoffTrack then
+                    local anim = Instance.new("Animation")
+                    anim.AnimationId = MAIN_ANIMATIONS.JERK_OFF
+                    jerkoffTrack = Humanoid:LoadAnimation(anim)
+                    jerkoffTrack.Looped = true
+                    jerkoffTrack:Play()
+                    jerkoffTrack:AdjustSpeed(JerkOffSpeed)
+                    print("Jerk off animation playing")
+                end
             
-              --// check if closerhandsTrack is not playing
-              if not closerhandsTrack then
-                  local anim = Instance.new("Animation")
-                  anim.AnimationId = MAIN_ANIMATIONS.CLOSER_HANDS
-                  closerhandsTrack = Humanoid:LoadAnimation(anim)
-                  closerhandsTrack:Play()
-                  closerhandsTrack:AdjustSpeed(JerkOffSpeed)
-              end
-          elseif setToOriginalValues then
-              setToOriginalValues = false
-              Humanoid.WalkSpeed = 16 --// reset walk speed
-              Humanoid.JumpPower = 50 --// reset jump power
-              --// stop animations if they are playing
-              if jerkoffTrack then
-                  jerkoffTrack:Stop()
-                  jerkoffTrack = nil
-              end
-              if closerhandsTrack then
-                  closerhandsTrack:Stop()
-                  closerhandsTrack = nil
-              end
-          end
-      end)
-   end,
+                --// check if closerhandsTrack is not playing
+                if not closerhandsTrack then
+                    local anim = Instance.new("Animation")
+                    anim.AnimationId = MAIN_ANIMATIONS.CLOSER_HANDS
+                    closerhandsTrack = Humanoid:LoadAnimation(anim)
+                    closerhandsTrack:Play()
+                    closerhandsTrack:AdjustSpeed(JerkOffSpeed)
+                    print("Closer hands animation playing")
+                end
+            elseif setToOriginalValues then
+                setToOriginalValues = false
+                Humanoid.WalkSpeed = 16 --// reset walk speed
+                Humanoid.JumpPower = 50 --// reset jump power
+                --// stop animations if they are playing
+                if jerkoffTrack then
+                    jerkoffTrack:Stop()
+                    jerkoffTrack = nil
+                    print("Jerk off animation stopped")
+                end
+                if closerhandsTrack then
+                    closerhandsTrack:Stop()
+                    closerhandsTrack = nil
+                    print("Closer hands animation stopped")
+                end
+            end
+        end)
+    end,
 })
