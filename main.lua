@@ -241,66 +241,71 @@ MiscTab:CreateButton({
    end,
 })
 local LilScriptsTab = Window:CreateTab("Lil Scripts", 4483362458)
-
 LilScriptsTab:CreateButton({
 	Name = "HeadSit Toggle (Press H)",
 	Callback = function()
-		-- HeadSit script
+		local TweenService = game:GetService("TweenService")
 		local Players = game:GetService("Players")
 		local RunService = game:GetService("RunService")
-		local UserInputService = game:GetService("UserInputService")
+		local UIS = game:GetService("UserInputService")
 
 		local LocalPlayer = Players.LocalPlayer
 		local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 		local HRP = Character:WaitForChild("HumanoidRootPart")
 
-		local HeadSitConnection = nil
-		local Attached = false
+		local attached = false
+		local connection
 
 		local function getClosestPlayer()
-			local closest, shortestDistance = nil, math.huge
-			for _, player in ipairs(Players:GetPlayers()) do
-				if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
-					local head = player.Character.Head
-					local distance = (HRP.Position - head.Position).Magnitude
-					if distance < shortestDistance and distance <= 100 then -- within 10 studs
-						closest = player
-						shortestDistance = distance
+			local closestPlayer
+			local shortestDistance = 10
+			for _, plr in pairs(Players:GetPlayers()) do
+				if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Head") then
+					local dist = (HRP.Position - plr.Character.Head.Position).Magnitude
+					if dist < shortestDistance then
+						closestPlayer = plr
+						shortestDistance = dist
 					end
 				end
 			end
-			return closest
+			return closestPlayer
 		end
 
-		UserInputService.InputBegan:Connect(function(input, processed)
-			if processed then return end
-			if input.KeyCode == Enum.KeyCode.H then
-				if Attached then
-					-- Detach
-					if HeadSitConnection then HeadSitConnection:Disconnect() end
-					HeadSitConnection = nil
-					Attached = false
-					warn("Detached from head.")
-				else
-					-- Attach
-					local targetPlayer = getClosestPlayer()
-					if not targetPlayer then
-						warn("No player nearby.")
-						return
-					end
+		local function attachToHead(targetPlayer)
+			local head = targetPlayer.Character and targetPlayer.Character:FindFirstChild("Head")
+			if not head then return end
 
-					local targetHead = targetPlayer.Character:FindFirstChild("Head")
-					if not targetHead then return end
+			local goal = { CFrame = head.CFrame * CFrame.new(0, 1.5, 0) }
+			TweenService:Create(HRP, TweenInfo.new(0.35, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), goal):Play()
 
-					Attached = true
-					HeadSitConnection = RunService.Heartbeat:Connect(function()
-						if HRP and targetHead then
-							HRP.CFrame = targetHead.CFrame * CFrame.new(0, 1.5, 0)
-						end
-					end)
-					warn("Attached to " .. targetPlayer.Name)
+			connection = RunService.Heartbeat:Connect(function()
+				if not head or not head.Parent then
+					if connection then connection:Disconnect() end
+					connection = nil
+					attached = false
+					return
 				end
+				HRP.CFrame = head.CFrame * CFrame.new(0, 1.5, 0)
+			end)
+		end
+
+		local function detach()
+			if connection then
+				connection:Disconnect()
+				connection = nil
 			end
-		end)
-	end,
-})
+		end
+
+		UIS.InputBegan:Connect(function(input, gameProcessed)
+			if gameProcessed or input.KeyCode ~= Enum.KeyCode.H then return end
+
+			if not attached then
+				local closest = getClosestPlayer()
+				if closest then
+					attached = true
+					attachToHead(closest)
+				end
+			else
+				attached = false
+				detach()
+			e
