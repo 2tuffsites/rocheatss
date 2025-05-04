@@ -240,5 +240,67 @@ MiscTab:CreateButton({
       end
    end,
 })
--- Visuals Tab
-local VisualsTab = Window:CreateTab("Visuals", 4483362458)
+local LilScriptsTab = Window:CreateTab("Lil Scripts", 4483362458)
+
+LilScriptsTab:CreateButton({
+	Name = "HeadSit Toggle (Press H)",
+	Callback = function()
+		-- HeadSit script
+		local Players = game:GetService("Players")
+		local RunService = game:GetService("RunService")
+		local UserInputService = game:GetService("UserInputService")
+
+		local LocalPlayer = Players.LocalPlayer
+		local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+		local HRP = Character:WaitForChild("HumanoidRootPart")
+
+		local HeadSitConnection = nil
+		local Attached = false
+
+		local function getClosestPlayer()
+			local closest, shortestDistance = nil, math.huge
+			for _, player in ipairs(Players:GetPlayers()) do
+				if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+					local head = player.Character.Head
+					local distance = (HRP.Position - head.Position).Magnitude
+					if distance < shortestDistance and distance <= 10 then -- within 10 studs
+						closest = player
+						shortestDistance = distance
+					end
+				end
+			end
+			return closest
+		end
+
+		UserInputService.InputBegan:Connect(function(input, processed)
+			if processed then return end
+			if input.KeyCode == Enum.KeyCode.H then
+				if Attached then
+					-- Detach
+					if HeadSitConnection then HeadSitConnection:Disconnect() end
+					HeadSitConnection = nil
+					Attached = false
+					warn("Detached from head.")
+				else
+					-- Attach
+					local targetPlayer = getClosestPlayer()
+					if not targetPlayer then
+						warn("No player nearby.")
+						return
+					end
+
+					local targetHead = targetPlayer.Character:FindFirstChild("Head")
+					if not targetHead then return end
+
+					Attached = true
+					HeadSitConnection = RunService.Heartbeat:Connect(function()
+						if HRP and targetHead then
+							HRP.CFrame = targetHead.CFrame * CFrame.new(0, 1.5, 0)
+						end
+					end)
+					warn("Attached to " .. targetPlayer.Name)
+				end
+			end
+		end)
+	end,
+})
