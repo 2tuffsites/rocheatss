@@ -1,3 +1,5 @@
+
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
@@ -141,6 +143,22 @@ PlayerTab:CreateButton({
       game.Players.LocalPlayer.CameraMaxZoomDistance = math.huge
    end,
 })
+
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = game.Players.LocalPlayer
+local isInvisible = false
+local invisibilityEnabled = false
+local originalHRPParent = nil
+
+PlayerTab:CreateToggle({
+   Name = "Invisible Toggle (Press R)",
+   CurrentValue = false,
+   Flag = "InvisibleToggle",
+   Callback = function(Value)
+      invisibilityEnabled = Value
+   end,
+})
+
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
    if gameProcessed then return end
    if input.KeyCode == Enum.KeyCode.R and invisibilityEnabled then
@@ -183,7 +201,6 @@ MiscTab:CreateButton({
       loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
    end,
 })
-
 -- Baseplate and Color Picker
 local selectedColor = Color3.fromRGB(255, 255, 255)
 local baseplate = nil
