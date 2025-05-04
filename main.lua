@@ -242,61 +242,43 @@ MiscTab:CreateButton({
 })
 -- Visuals Tab
 local VisualsTab = Window:CreateTab("Visuals", 4483362458)
-
--- Skybox Picker
 VisualsTab:CreateDropdown({
    Name = "Skybox",
-   Options = {"Skybox1", "Skybox2", "Skybox3"}, -- Replace with your custom skybox names
-   CurrentOption = "Skybox1", 
-   Flag = "SkyboxPicker",
-   Callback = function(selectedSkybox)
-      if selectedSkybox == "Skybox1" then
-         game.Lighting.Skybox = "rbxassetid://Skybox1ID" -- Replace with asset ID
-      elseif selectedSkybox == "Skybox2" then
-         game.Lighting.Skybox = "rbxassetid://Skybox2ID" -- Replace with asset ID
-      elseif selectedSkybox == "Skybox3" then
-         game.Lighting.Skybox = "rbxassetid://Skybox3ID" -- Replace with asset ID
+   Options = {"Black Void"},
+   CurrentOption = "Black Void",
+   Flag = "SkyboxDropdown",
+   Callback = function(Option)
+      local lighting = game:GetService("Lighting")
+      if Option == "Black Void" then
+         lighting.Skybox = "rbxassetid://black_void_skybox" -- You'll need to upload your custom black void skybox asset
+         lighting.Ambient = Color3.fromRGB(0, 0, 0) -- Set ambient light to black
+         lighting.OutdoorAmbient = Color3.fromRGB(0, 0, 0) -- Set outdoor light to black
+      elseif Option == "Skybox 2" then
+         lighting.Skybox = "rbxassetid://skybox_2_asset_id"
+         lighting.Ambient = Color3.fromRGB(255, 255, 255) -- Adjust ambient light for other skyboxes
+         lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+      elseif Option == "Skybox 3" then
+         lighting.Skybox = "rbxassetid://skybox_3_asset_id"
+         lighting.Ambient = Color3.fromRGB(200, 200, 200)
+         lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 200)
+      elseif Option == "Skybox 4" then
+         lighting.Skybox = "rbxassetid://skybox_4_asset_id"
+         lighting.Ambient = Color3.fromRGB(150, 150, 150)
+         lighting.OutdoorAmbient = Color3.fromRGB(150, 150, 150)
+      elseif Option == "Skybox 5" then
+         lighting.Skybox = "rbxassetid://skybox_5_asset_id"
+         lighting.Ambient = Color3.fromRGB(100, 100, 100)
+         lighting.OutdoorAmbient = Color3.fromRGB(100, 100, 100)
       end
-   end,
+   end
 })
 
--- Lighting Customization
-VisualsTab:CreateSlider({
-   Name = "Brightness",
-   Range = {0, 10},
-   Increment = 0.1,
-   Suffix = "Brightness",
-   CurrentValue = 2,
-   Flag = "BrightnessSlider",
-   Callback = function(Value)
-      game.Lighting.Brightness = Value
-   end,
-})
-
-VisualsTab:CreateColorPicker({
-   Name = "Ambient Color",
-   Flag = "AmbientColorPicker",
-   Color = Color3.fromRGB(255, 255, 255),
-   Callback = function(Color)
-      game.Lighting.Ambient = Color
-   end,
-})
-
--- Color Filter
-VisualsTab:CreateToggle({
-   Name = "Color Filter",
-   CurrentValue = false,
-   Flag = "ColorFilterToggle",
-   Callback = function(Value)
-      if Value then
-         local colorCorrection = Instance.new("ColorCorrectionEffect")
-         colorCorrection.Saturation = -1 -- Adjust saturation for a black and white effect, or tweak as needed
-         colorCorrection.Parent = game.Lighting
-      else
-         local existingEffect = game.Lighting:FindFirstChildOfClass("ColorCorrectionEffect")
-         if existingEffect then
-            existingEffect:Destroy()
-         end
-      end
-   end,
+VisualsTab:CreateButton({
+   Name = "Reset Skybox",
+   Callback = function()
+      local lighting = game:GetService("Lighting")
+      lighting.Skybox = nil
+      lighting.Ambient = Color3.fromRGB(255, 255, 255) -- Reset ambient light
+      lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255) -- Reset outdoor ambient
+   end
 })
