@@ -242,9 +242,10 @@ MiscTab:CreateButton({
 })
 -- Visuals Tab
 local VisualsTab = Window:CreateTab("Visuals", 4483362458)
+
 VisualsTab:CreateDropdown({
    Name = "Skybox",
-   Options = {"Black Void"},
+   Options = {"Black Void", "Skybox 2", "Skybox 3", "Skybox 4", "Skybox 5"},
    CurrentOption = "Black Void",
    Flag = "SkyboxDropdown",
    Callback = function(Option)
@@ -272,7 +273,6 @@ VisualsTab:CreateDropdown({
       end
    end
 })
-
 VisualsTab:CreateButton({
    Name = "Reset Skybox",
    Callback = function()
