@@ -240,7 +240,10 @@ MiscTab:CreateButton({
       end
    end,
 })
+
+-- LilScripts Tab
 local LilScriptsTab = Window:CreateTab("Lil Scripts", 4483362458)
+
 LilScriptsTab:CreateButton({
 	Name = "HeadSit Toggle (Press H)",
 	Callback = function()
@@ -308,4 +311,7 @@ LilScriptsTab:CreateButton({
 			else
 				attached = false
 				detach()
-			e
+			end
+		end)
+	end
+})
