@@ -197,7 +197,7 @@ MiscTab:CreateButton({
 local LilScriptsTab = Window:CreateTab("Lil Scripts", 4483362458)
 
 LilScriptsTab:CreateButton({
-	Name = "HeadSit Toggle (Press H)",
+	Name = "HeadSit (Press H)",
 	Callback = function()
 		local TweenService = game:GetService("TweenService")
 		local Players = game:GetService("Players")
