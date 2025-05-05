@@ -310,66 +310,64 @@ TeleportsTab:CreateInput({
 local ScriptsTab = Window:CreateTab("Scripts", 4483362458)
 
 getgenv().bangSpeed = 1
+getgenv().bangScriptLoaded = false
 
-local function findPlayerByName(name)
+local UserInputService = game:GetService("UserInputService")
+
+local function getNearestPlayer()
+    local closest, shortest = nil, math.huge
+    local lp = game.Players.LocalPlayer
+    local char = lp.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    local hrp = char.HumanoidRootPart
+
     for _, player in ipairs(game.Players:GetPlayers()) do
-        if player.DisplayName:lower() == name:lower() then
-            return player
+        if player ~= lp and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local dist = (hrp.Position - player.Character.HumanoidRootPart.Position).Magnitude
+            if dist < shortest then
+                shortest = dist
+                closest = player
+            end
         end
     end
-    return nil
+    return closest
 end
 
 local function bang_plr_bypass(target)
-    if getgenv().bangScriptLoaded then
-        Fluent:Notify({
-            Title = "Failed",
-            Content = "Already loaded bang bypass!",
-            Duration = 5
-        })
-        return
-    end
+    if getgenv().bangScriptLoaded then return end
 
     getgenv().bangScriptLoaded = true
-    getgenv().enabled = true
     getgenv().unload = false
 
-    local Players = game:GetService("Players")
     local RunService = game:GetService("RunService")
-    local LocalPlayer = Players.LocalPlayer
-    local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    local Humanoid = Character:WaitForChild("Humanoid")
-    local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+    local lp = game.Players.LocalPlayer
+    local char = lp.Character or lp.CharacterAdded:Wait()
+    local hum = char:WaitForChild("Humanoid")
+    local hrp = char:WaitForChild("HumanoidRootPart")
 
-    local bangAnim = Instance.new("Animation")
-    bangAnim.AnimationId = "rbxassetid://5918726674"
-    local bang = Humanoid:LoadAnimation(bangAnim)
-    bang.Looped = true
-    bang:Play(0.1, 1, 1)
+    local anim = Instance.new("Animation")
+    anim.AnimationId = "rbxassetid://5918726674"
+    local loadedAnim = hum:LoadAnimation(anim)
+    loadedAnim.Looped = true
+    loadedAnim:Play(0.1, 1, 1)
 
-    getgenv().bangAnimation = bang
+    getgenv().bangAnimation = loadedAnim
 
     getgenv().bangLoop = RunService.Stepped:Connect(function()
-        if getgenv().unload then
-            bang:Stop()
-            bangAnim:Destroy()
-            getgenv().bangScriptLoaded = false
-            return
+        if getgenv().unload or not target or not target.Character then return end
+        if loadedAnim.Speed ~= getgenv().bangSpeed then
+            loadedAnim:AdjustSpeed(getgenv().bangSpeed)
         end
 
-        if bang.Speed ~= getgenv().bangSpeed then
-            bang:AdjustSpeed(getgenv().bangSpeed)
-        end
-
-        if target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-            local targetRoot = target.Character:FindFirstChild("HumanoidRootPart")
-            HumanoidRootPart.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 1.1)
+        local targetHRP = target.Character:FindFirstChild("HumanoidRootPart")
+        if targetHRP then
+            hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 1.1)
         end
     end)
 
-    getgenv().bangDied = Humanoid.Died:Connect(function()
-        bang:Stop()
-        bangAnim:Destroy()
+    getgenv().bangDied = hum.Died:Connect(function()
+        loadedAnim:Stop()
+        anim:Destroy()
         getgenv().bangScriptLoaded = false
     end)
 end
@@ -385,33 +383,41 @@ local function bang_plr_bypass_off()
     end
 
     getgenv().bangScriptLoaded = false
-    getgenv().unload = nil
-    getgenv().enabled = false
+    getgenv().unload = true
 end
 
-ScriptsTab:CreateInput({
-    Name = "Bang Player",
-    PlaceholderText = "Enter Display Name",
-    RemoveTextAfterFocusLost = true,
-    Callback = function(displayName)
-        local targetPlayer = findPlayerByName(displayName)
-        if targetPlayer then
-            bang_plr_bypass(targetPlayer)
+-- Hotkey toggle (Z)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.Z then
+        if getgenv().bangScriptLoaded then
+            bang_plr_bypass_off()
             Fluent:Notify({
-                Title = "Notification",
-                Content = "Banging player: " .. displayName,
-                Duration = 5
+                Title = "Bang Player",
+                Content = "Disabled bang on nearest player",
+                Duration = 4
             })
         else
-            Fluent:Notify({
-                Title = "Notification",
-                Content = "Player not found: " .. displayName,
-                Duration = 5
-            })
+            local target = getNearestPlayer()
+            if target then
+                bang_plr_bypass(target)
+                Fluent:Notify({
+                    Title = "Bang Player",
+                    Content = "Banging nearest player: " .. target.DisplayName,
+                    Duration = 4
+                })
+            else
+                Fluent:Notify({
+                    Title = "Bang Player",
+                    Content = "No nearby players found!",
+                    Duration = 4
+                })
+            end
         end
     end
-})
+end)
 
+-- Slider
 ScriptsTab:CreateSlider({
     Name = "Bang Speed",
     Range = {0.1, 20},
@@ -423,14 +429,15 @@ ScriptsTab:CreateSlider({
     end
 })
 
+-- Unbang button (manual override)
 ScriptsTab:CreateButton({
     Name = "Unbang",
     Callback = function()
         bang_plr_bypass_off()
         Fluent:Notify({
-            Title = "Notification",
-            Content = "Stopped banging the player",
-            Duration = 5
+            Title = "Bang Player",
+            Content = "Stopped banging manually",
+            Duration = 4
         })
     end
 })
