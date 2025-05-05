@@ -2,13 +2,13 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "2tuff Menu",
-   Icon = nil,
-   LoadingTitle = "Hey! no cheating! {jokin}",
+   Icon = nil, -- Fixed from 0 to nil
+   LoadingTitle = "Hey! no cheating!{jokin}",
    LoadingSubtitle = "by luc",
    Theme = {
-      TextColor = Color3.fromRGB(0, 102, 204),
-      Background = Color3.fromRGB(255, 255, 255),
-      Topbar = Color3.fromRGB(255, 255, 255),
+      TextColor = Color3.fromRGB(0, 102, 204), -- Royal blue text
+      Background = Color3.fromRGB(255, 255, 255), -- White background
+      Topbar = Color3.fromRGB(255, 255, 255), -- White topbar
       Shadow = Color3.fromRGB(200, 200, 200),
       NotificationBackground = Color3.fromRGB(230, 230, 230),
       NotificationActionsBackground = Color3.fromRGB(255, 255, 255),
@@ -43,10 +43,19 @@ local Window = Rayfield:CreateWindow({
       FolderName = nil,
       FileName = "2tuff cheats"
    },
-   KeySystem = false,
+   KeySystem = true,
+   KeySettings = {
+      Title = "2tuff cheats",
+      Subtitle = "Key System",
+      Note = "Enter key to continue",
+      FileName = "KeySystem",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"lapolicia"}
+   }
 })
 
--- Tabs and UI elements (same as before)
+-- Player Tab
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
 PlayerTab:CreateSlider({
@@ -55,6 +64,7 @@ PlayerTab:CreateSlider({
    Increment = 1,
    Suffix = "Speed",
    CurrentValue = 16,
+   Flag = "SpeedSlider",
    Callback = function(Value)
       local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
       if hum then
@@ -69,6 +79,7 @@ PlayerTab:CreateSlider({
    Increment = 10,
    Suffix = "Jump",
    CurrentValue = 50,
+   Flag = "JumpSlider",
    Callback = function(Value)
       local plr = game.Players.LocalPlayer
       local function applyJumpPower()
@@ -93,9 +104,11 @@ PlayerTab:CreateButton({
       Tool.Name = "TP Tool"
       Tool.RequiresHandle = false
       Tool.CanBeDropped = false
+
       local player = game.Players.LocalPlayer
       local mouse = player:GetMouse()
       local connection
+
       Tool.Equipped:Connect(function()
          if connection then connection:Disconnect() end
          connection = mouse.Button1Down:Connect(function()
@@ -106,9 +119,11 @@ PlayerTab:CreateButton({
             end
          end)
       end)
+
       Tool.Unequipped:Connect(function()
          if connection then connection:Disconnect() end
       end)
+
       Tool.Parent = player.Backpack
    end,
 })
@@ -120,6 +135,55 @@ PlayerTab:CreateButton({
    end,
 })
 
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = game.Players.LocalPlayer
+local isInvisible = false
+local invisibilityEnabled = false
+local originalHRPParent = nil
+
+PlayerTab:CreateToggle({
+   Name = "Invisible Toggle (Press R)",
+   CurrentValue = false,
+   Flag = "InvisibleToggle",
+   Callback = function(Value)
+      invisibilityEnabled = Value
+   end,
+})
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+   if gameProcessed then return end
+   if input.KeyCode == Enum.KeyCode.R and invisibilityEnabled then
+      local char = LocalPlayer.Character
+      if not char then return end
+      local hrp = char:FindFirstChild("HumanoidRootPart")
+      if not hrp then return end
+
+      if not isInvisible then
+         originalHRPParent = hrp.Parent
+         hrp.Parent = nil
+         for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+               part.Transparency = 0.7
+            elseif part:IsA("Decal") or part:IsA("Texture") then
+               part:Destroy()
+            end
+         end
+         isInvisible = true
+      else
+         if originalHRPParent then
+            hrp.Parent = originalHRPParent
+         end
+         for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+               part.Transparency = 0
+            end
+         end
+         isInvisible = false
+      end
+   end
+end)
+
+-- Misc Tab
 local MiscTab = Window:CreateTab("Misc", 4483362458)
 
 MiscTab:CreateButton({
@@ -129,20 +193,21 @@ MiscTab:CreateButton({
    end,
 })
 
--- Baseplate Setup
+-- Baseplate and Color Picker
 local selectedColor = Color3.fromRGB(255, 255, 255)
 local baseplate = nil
 
 MiscTab:CreateToggle({
    Name = "Custom Baseplate Toggle",
    CurrentValue = false,
+   Flag = "BaseplateToggle",
    Callback = function(Value)
       if Value then
          if not baseplate then
             baseplate = Instance.new("Part")
             baseplate.Size = Vector3.new(10000, 0, 10000)
             baseplate.Anchored = true
-            baseplate.Position = Vector3.new(0, 0, 0)
+            baseplate.Position = Vector3.new(0, 1, 0)
             baseplate.Color = selectedColor
             baseplate.Material = Enum.Material.SmoothPlastic
             baseplate.Name = "CustomBaseplate"
@@ -151,12 +216,102 @@ MiscTab:CreateToggle({
             baseplate.Parent = workspace
          end
       else
-         if baseplate then baseplate.Parent = nil end
+         if baseplate then
+            baseplate.Parent = nil
+         end
       end
    end,
 })
 
 MiscTab:CreateColorPicker({
    Name = "Baseplate Color",
+   Flag = "BaseplateColor",
    Color = selectedColor,
-   Callback = function(
+   Callback = function(Color)
+      selectedColor = Color
+   end,
+})
+
+MiscTab:CreateButton({
+   Name = "Apply Baseplate Color",
+   Callback = function()
+      if baseplate then
+         baseplate.Color = selectedColor
+      end
+   end,
+})
+
+-- LilScripts Tab
+local LilScriptsTab = Window:CreateTab("Lil Scripts", 4483362458)
+
+LilScriptsTab:CreateButton({
+	Name = "HeadSit Toggle (Press H)",
+	Callback = function()
+		local TweenService = game:GetService("TweenService")
+		local Players = game:GetService("Players")
+		local RunService = game:GetService("RunService")
+		local UIS = game:GetService("UserInputService")
+
+		local LocalPlayer = Players.LocalPlayer
+		local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+		local HRP = Character:WaitForChild("HumanoidRootPart")
+
+		local attached = false
+		local connection
+
+		local function getClosestPlayer()
+			local closestPlayer
+			local shortestDistance = 10
+			for _, plr in pairs(Players:GetPlayers()) do
+				if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Head") then
+					local dist = (HRP.Position - plr.Character.Head.Position).Magnitude
+					if dist < shortestDistance then
+						closestPlayer = plr
+						shortestDistance = dist
+					end
+				end
+			end
+			return closestPlayer
+		end
+
+		local function attachToHead(targetPlayer)
+			local head = targetPlayer.Character and targetPlayer.Character:FindFirstChild("Head")
+			if not head then return end
+
+			local goal = { CFrame = head.CFrame * CFrame.new(0, 1.5, 0) }
+			TweenService:Create(HRP, TweenInfo.new(0.35, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), goal):Play()
+
+			connection = RunService.Heartbeat:Connect(function()
+				if not head or not head.Parent then
+					if connection then connection:Disconnect() end
+					connection = nil
+					attached = false
+					return
+				end
+				HRP.CFrame = head.CFrame * CFrame.new(0, 1.5, 0)
+			end)
+		end
+
+		local function detach()
+			if connection then
+				connection:Disconnect()
+				connection = nil
+			end
+		end
+
+		UIS.InputBegan:Connect(function(input, gameProcessed)
+			if gameProcessed or input.KeyCode ~= Enum.KeyCode.H then return end
+
+			if not attached then
+				local closest = getClosestPlayer()
+				if closest then
+					attached = true
+					attachToHead(closest)
+				end
+			else
+				attached = false
+				detach()
+			end
+		end)
+	end
+})
