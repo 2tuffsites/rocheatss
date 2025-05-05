@@ -2,13 +2,13 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "2tuff Menu",
-   Icon = nil, -- Fixed from 0 to nil
-   LoadingTitle = "Hey! no cheating!{jokin}",
+   Icon = nil,
+   LoadingTitle = "Hey! no cheating! {jokin}",
    LoadingSubtitle = "by luc",
    Theme = {
-      TextColor = Color3.fromRGB(0, 102, 204), -- Royal blue text
-      Background = Color3.fromRGB(255, 255, 255), -- White background
-      Topbar = Color3.fromRGB(255, 255, 255), -- White topbar
+      TextColor = Color3.fromRGB(0, 102, 204),
+      Background = Color3.fromRGB(255, 255, 255),
+      Topbar = Color3.fromRGB(255, 255, 255),
       Shadow = Color3.fromRGB(200, 200, 200),
       NotificationBackground = Color3.fromRGB(230, 230, 230),
       NotificationActionsBackground = Color3.fromRGB(255, 255, 255),
@@ -43,19 +43,10 @@ local Window = Rayfield:CreateWindow({
       FolderName = nil,
       FileName = "2tuff cheats"
    },
-   KeySystem = true,
-   KeySettings = {
-      Title = "2tuff cheats",
-      Subtitle = "Key System",
-      Note = "Enter key to continue",
-      FileName = "KeySystem",
-      SaveKey = true,
-      GrabKeyFromSite = false,
-      Key = {"lapolicia"}
-   }
+   KeySystem = false,
 })
 
--- Player Tab
+-- Tabs and UI elements (same as before)
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
 PlayerTab:CreateSlider({
@@ -64,7 +55,6 @@ PlayerTab:CreateSlider({
    Increment = 1,
    Suffix = "Speed",
    CurrentValue = 16,
-   Flag = "SpeedSlider",
    Callback = function(Value)
       local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
       if hum then
@@ -79,7 +69,6 @@ PlayerTab:CreateSlider({
    Increment = 10,
    Suffix = "Jump",
    CurrentValue = 50,
-   Flag = "JumpSlider",
    Callback = function(Value)
       local plr = game.Players.LocalPlayer
       local function applyJumpPower()
@@ -104,11 +93,9 @@ PlayerTab:CreateButton({
       Tool.Name = "TP Tool"
       Tool.RequiresHandle = false
       Tool.CanBeDropped = false
-
       local player = game.Players.LocalPlayer
       local mouse = player:GetMouse()
       local connection
-
       Tool.Equipped:Connect(function()
          if connection then connection:Disconnect() end
          connection = mouse.Button1Down:Connect(function()
@@ -119,11 +106,9 @@ PlayerTab:CreateButton({
             end
          end)
       end)
-
       Tool.Unequipped:Connect(function()
          if connection then connection:Disconnect() end
       end)
-
       Tool.Parent = player.Backpack
    end,
 })
@@ -135,7 +120,6 @@ PlayerTab:CreateButton({
    end,
 })
 
--- Misc Tab
 local MiscTab = Window:CreateTab("Misc", 4483362458)
 
 MiscTab:CreateButton({
@@ -145,14 +129,13 @@ MiscTab:CreateButton({
    end,
 })
 
--- Baseplate and Color Picker
+-- Baseplate Setup
 local selectedColor = Color3.fromRGB(255, 255, 255)
 local baseplate = nil
 
 MiscTab:CreateToggle({
    Name = "Custom Baseplate Toggle",
    CurrentValue = false,
-   Flag = "BaseplateToggle",
    Callback = function(Value)
       if Value then
          if not baseplate then
@@ -168,27 +151,12 @@ MiscTab:CreateToggle({
             baseplate.Parent = workspace
          end
       else
-         if baseplate then
-            baseplate.Parent = nil
-         end
+         if baseplate then baseplate.Parent = nil end
       end
    end,
 })
 
 MiscTab:CreateColorPicker({
    Name = "Baseplate Color",
-   Flag = "BaseplateColor",
    Color = selectedColor,
-   Callback = function(Color)
-      selectedColor = Color
-   end,
-})
-
-MiscTab:CreateButton({
-   Name = "Apply Baseplate Color",
-   Callback = function()
-      if baseplate then
-         baseplate.Color = selectedColor
-      end
-   end,
-})
+   Callback = function(
