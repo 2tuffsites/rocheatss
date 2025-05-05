@@ -55,7 +55,6 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
--- Player Tab
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
 PlayerTab:CreateSlider({
@@ -135,7 +134,6 @@ PlayerTab:CreateButton({
    end,
 })
 
--- Misc Tab
 local MiscTab = Window:CreateTab("Misc", 4483362458)
 
 MiscTab:CreateButton({
@@ -193,7 +191,7 @@ MiscTab:CreateButton({
    end,
 })
 
--- Spin Toggle and Speed Slider
+-- Spin
 local spinSpeed = 10
 local spinning = false
 
@@ -238,6 +236,7 @@ MiscTab:CreateSlider({
       spinSpeed = Value
    end,
 })
+
 -- Teleports Tab
 local TeleportsTab = Window:CreateTab("Teleports", 4483362458)
 
@@ -249,24 +248,61 @@ local TpDropdown = TeleportsTab:CreateDropdown({
         "Tower (Top)", "Tower (Highest Part)", "Donut Shop", "Above Relaxing Room", "Note Board"
     },
     CurrentOption = "Spawn 1",
-    Flag = "TpDropdown"
+    Flag = "TpDropdown",
+    Callback = function(option)
+        local location = {
+            ["Spawn 1"] = CFrame.new(-0.0001, 5, 0.0001),
+            ["Spawn 2"] = CFrame.new(166.64, 5, 195.381),
+            ["Spawn 3"] = CFrame.new(143.6, 5, -33.09),
+            ["Circle Booth"] = CFrame.new(26.74, 7.81, 86.72),
+            ["Avatar-UI"] = CFrame.new(-129, 4.9, 82),
+            ["Private Room (Inside)"] = CFrame.new(4220.82, 2.77, 60.77),
+            ["Bathrooms"] = CFrame.new(-72.4, 5.1, 93.09),
+            ["Chill Spot"] = CFrame.new(229, 5.75, -21.56),
+            ["Picnic"] = CFrame.new(85.85, 3.61, -29.83),
+            ["Middle Room (Tent)"] = CFrame.new(70.95, 5.63, 24.3),
+            ["Tower (Float Up Part)"] = CFrame.new(61.33, 72.02, 215.73),
+            ["Tower (Top)"] = CFrame.new(63.23, 284.41, 193.53),
+            ["Tower (Highest Part)"] = CFrame.new(58.05, 313.31, 225.22),
+            ["Donut Shop"] = CFrame.new(-80.83, 3.17, -82.67),
+            ["Above Relaxing Room"] = CFrame.new(-97.44, 24.48, 121.39),
+            ["Note Board"] = CFrame.new(58.61, 5, 245.69)
+        }
+        local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if hrp and location[option] then
+            hrp.CFrame = location[option]
+        end
+    end
 })
 
-local locations = {
-    ["Spawn 1"] = CFrame.new(-0.000122070313, 4.99999857, 0.000122070313),
-    ["Spawn 2"] = CFrame.new(166.64, 4.99999857, 195.381),
-    ["Spawn 3"] = CFrame.new(143.6, 4.99999857, -33.09),
-    ["Circle Booth"] = CFrame.new(26.7397423, 7.81395245, 86.7164536),
-    ["Avatar-UI"] = CFrame.new(-129, 4.9, 82),
-    ["Private Room (Inside)"] = CFrame.new(4220.82275, 2.76511836, 60.7681046),
-    ["Bathrooms"] = CFrame.new(-72.3955917, 5.09832525, 93.0914459),
-    ["Chill Spot"] = CFrame.new(228.970184, 5.75081444, -21.5613441),
-    ["Picnic"] = CFrame.new(85.846756, 3.61196709, -29.8345909),
-    ["Middle Room (Tent)"] = CFrame.new(70.9464493, 5.62692404, 24.2968006),
-    ["Tower (Float Up Part)"] = CFrame.new(61.3288841, 72.0192184, 215.731613),
-    ["Tower (Top)"] = CFrame.new(63.2298126, 284.407227, 193.529007),
-    ["Tower (Highest Part)"] = CFrame.new(58.0468788, 313.312622, 225.215027),
-    ["Donut Shop"] = CFrame.new(-80.8301239, 3.1662631, -82.6656799),
-    ["Above Relaxing Room"] = CFrame.new(-97.4412308, 24.4840164, 121.394676),
-    ["Note Board"] = CFrame.new(58.6107864, 4.99999857, 245.690369)
-}
+TeleportsTab:CreateInput({
+    Name = "Teleport to Player",
+    PlaceholderText = "Enter player display name",
+    RemoveTextAfterFocusLost = true,
+    Callback = function(displayName)
+        local lowerInput = displayName:lower()
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            if player.DisplayName:lower() == lowerInput then
+                local char = player.Character
+                local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    local myHRP = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    if myHRP then
+                        myHRP.CFrame = hrp.CFrame
+                        Rayfield:Notify({
+                            Title = "Teleported!",
+                            Content = "You were teleported to " .. player.DisplayName,
+                            Duration = 5
+                        })
+                        return
+                    end
+                end
+            end
+        end
+        Rayfield:Notify({
+            Title = "Teleport Failed",
+            Content = "Player not found or unavailable.",
+            Duration = 5
+        })
+    end
+})
