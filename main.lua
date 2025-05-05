@@ -1,5 +1,7 @@
+-- LOAD RAYFIELD UI LIBRARY
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
+-- CREATE WINDOW
 local Window = Rayfield:CreateWindow({
    Name = "2tuff Menu",
    Icon = nil,
@@ -55,6 +57,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
+-- PLAYER TAB
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
 PlayerTab:CreateSlider({
@@ -66,9 +69,7 @@ PlayerTab:CreateSlider({
    Flag = "SpeedSlider",
    Callback = function(Value)
       local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-      if hum then
-         hum.WalkSpeed = Value
-      end
+      if hum then hum.WalkSpeed = Value end
    end,
 })
 
@@ -103,7 +104,6 @@ PlayerTab:CreateButton({
       Tool.Name = "TP Tool"
       Tool.RequiresHandle = false
       Tool.CanBeDropped = false
-
       local player = game.Players.LocalPlayer
       local mouse = player:GetMouse()
       local connection
@@ -111,11 +111,8 @@ PlayerTab:CreateButton({
       Tool.Equipped:Connect(function()
          if connection then connection:Disconnect() end
          connection = mouse.Button1Down:Connect(function()
-            local char = player.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            if hrp then
-               hrp.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 5, 0))
-            end
+            local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then hrp.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 5, 0)) end
          end)
       end)
 
@@ -134,6 +131,7 @@ PlayerTab:CreateButton({
    end,
 })
 
+-- MISC TAB
 local MiscTab = Window:CreateTab("Misc", 4483362458)
 
 MiscTab:CreateButton({
@@ -143,7 +141,7 @@ MiscTab:CreateButton({
    end,
 })
 
--- Baseplate and Color Picker
+-- Baseplate Color + Toggle
 local selectedColor = Color3.fromRGB(255, 255, 255)
 local baseplate = nil
 
@@ -166,9 +164,7 @@ MiscTab:CreateToggle({
             baseplate.Parent = workspace
          end
       else
-         if baseplate then
-            baseplate.Parent = nil
-         end
+         if baseplate then baseplate.Parent = nil end
       end
    end,
 })
@@ -185,9 +181,7 @@ MiscTab:CreateColorPicker({
 MiscTab:CreateButton({
    Name = "Apply Baseplate Color",
    Callback = function()
-      if baseplate then
-         baseplate.Color = selectedColor
-      end
+      if baseplate then baseplate.Color = selectedColor end
    end,
 })
 
@@ -199,29 +193,23 @@ local function startSpinning()
    spinning = true
    task.spawn(function()
       while spinning do
-         local character = game.Players.LocalPlayer.Character
-         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
+         local char = game.Players.LocalPlayer.Character
+         if char and char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.CFrame *= CFrame.Angles(0, math.rad(spinSpeed), 0)
          end
          task.wait(0.005)
       end
    end)
 end
 
-local function stopSpinning()
-   spinning = false
-end
+local function stopSpinning() spinning = false end
 
 MiscTab:CreateToggle({
    Name = "Spin",
    CurrentValue = false,
    Flag = "SpinToggle",
    Callback = function(state)
-      if state then
-         startSpinning()
-      else
-         stopSpinning()
-      end
+      if state then startSpinning() else stopSpinning() end
    end,
 })
 
@@ -237,10 +225,10 @@ MiscTab:CreateSlider({
    end,
 })
 
--- Teleports Tab
+-- TELEPORTS TAB
 local TeleportsTab = Window:CreateTab("Teleports", 4483362458)
 
-local TpDropdown = TeleportsTab:CreateDropdown({
+TeleportsTab:CreateDropdown({
     Name = "Teleport Locations",
     Options = {
         "Spawn 1", "Spawn 2", "Spawn 3", "Circle Booth", "Avatar-UI", "Private Room (Inside)",
@@ -250,7 +238,7 @@ local TpDropdown = TeleportsTab:CreateDropdown({
     CurrentOption = "Spawn 1",
     Flag = "TpDropdown",
     Callback = function(option)
-        local location = {
+        local locations = {
             ["Spawn 1"] = CFrame.new(-0.0001, 5, 0.0001),
             ["Spawn 2"] = CFrame.new(166.64, 5, 195.381),
             ["Spawn 3"] = CFrame.new(143.6, 5, -33.09),
@@ -269,8 +257,8 @@ local TpDropdown = TeleportsTab:CreateDropdown({
             ["Note Board"] = CFrame.new(58.61, 5, 245.69)
         }
         local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-        if hrp and location[option] then
-            hrp.CFrame = location[option]
+        if hrp and locations[option] then
+            hrp.CFrame = locations[option]
         end
     end
 })
@@ -280,22 +268,19 @@ TeleportsTab:CreateInput({
     PlaceholderText = "Enter player display name",
     RemoveTextAfterFocusLost = true,
     Callback = function(displayName)
-        local lowerInput = displayName:lower()
-        for _, player in ipairs(game.Players:GetPlayers()) do
-            if player.DisplayName:lower() == lowerInput then
-                local char = player.Character
-                local hrp = char and char:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    local myHRP = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                    if myHRP then
-                        myHRP.CFrame = hrp.CFrame
-                        Rayfield:Notify({
-                            Title = "Teleported!",
-                            Content = "You were teleported to " .. player.DisplayName,
-                            Duration = 5
-                        })
-                        return
-                    end
+        local input = displayName:lower()
+        for _, plr in ipairs(game.Players:GetPlayers()) do
+            if plr.DisplayName:lower() == input then
+                local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+                local myHRP = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if hrp and myHRP then
+                    myHRP.CFrame = hrp.CFrame
+                    Rayfield:Notify({
+                        Title = "Teleported!",
+                        Content = "You were teleported to " .. plr.DisplayName,
+                        Duration = 5
+                    })
+                    return
                 end
             end
         end
