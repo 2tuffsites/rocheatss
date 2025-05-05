@@ -306,3 +306,61 @@ TeleportsTab:CreateInput({
         })
     end
 })
+local AnimationPackages = {
+    ["Stylish Animation Package"] = {
+        idle = "rbxassetid://282574440",
+        walk = "rbxassetid://282574216",
+        run = "rbxassetid://282574034",
+        jump = "rbxassetid://282574585",
+        fall = "rbxassetid://282574512",
+        climb = "rbxassetid://282574752"
+    },
+    ["Weird Zombie Animation Package"] = {
+        idle = "rbxassetid://616158929",
+        walk = "rbxassetid://616168032",
+        run = "rbxassetid://616163682",
+        jump = "rbxassetid://616161998",
+        fall = "rbxassetid://616157476",
+        climb = "rbxassetid://616156119"
+    },
+    -- Add more packages here as needed
+}
+
+local AnimationsTab = Window:CreateTab("Animations", 4483362458)
+
+local SelectedPackage = nil
+
+AnimationsTab:CreateDropdown({
+    Name = "Choose Animation Package",
+    Options = table.getn(AnimationPackages) > 0 and (function()
+        local names = {}
+        for name, _ in pairs(AnimationPackages) do
+            table.insert(names, name)
+        end
+        return names
+    end)() or {"No Packages"},
+    CurrentOption = "Stylish Animation Package",
+    Callback = function(Value)
+        SelectedPackage = AnimationPackages[Value]
+        if SelectedPackage then
+            local plr = game.Players.LocalPlayer
+            local animate = plr.Character and plr.Character:FindFirstChild("Animate")
+            if animate then
+                animate.idle.Animation1.AnimationId = SelectedPackage.idle
+                animate.idle.Animation2.AnimationId = SelectedPackage.idle
+                animate.walk.WalkAnim.AnimationId = SelectedPackage.walk
+                animate.run.RunAnim.AnimationId = SelectedPackage.run
+                animate.jump.JumpAnim.AnimationId = SelectedPackage.jump
+                animate.fall.FallAnim.AnimationId = SelectedPackage.fall
+                animate.climb.ClimbAnim.AnimationId = SelectedPackage.climb
+
+                -- Refresh character animations
+                plr.Character:BreakJoints()
+                task.wait()
+                plr:LoadCharacter()
+            else
+                warn("Animate script not found in character.")
+            end
+        end
+    end
+})
