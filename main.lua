@@ -287,3 +287,43 @@ TeleportsTab:CreateButton({
         end
     end
 })
+local TpToPlayerInput = Tabs.Teleports:AddInput("TpToPlayerInput", {
+    Title = "Teleport to Player",
+    Description = "Enter a player's DisplayName to teleport to",
+    Default = "",
+    Placeholder = "Player Name",
+    Numeric = false,
+    Finished = true,
+    Callback = function(displayName)
+        local targetPlayer = nil
+        local inputLower = displayName:lower()
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            if player.DisplayName:lower() == inputLower or player.Name:lower() == inputLower then
+                targetPlayer = player
+                break
+            end
+        end
+
+        if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local targetCFrame = targetPlayer.Character.HumanoidRootPart.CFrame
+            local localPlayer = game.Players.LocalPlayer
+            local hrp = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+            if hrp then
+                hrp.CFrame = targetCFrame
+                Fluent:Notify({
+                    Title = "Success",
+                    Content = "Teleported to " .. targetPlayer.DisplayName,
+                    Duration = 5
+                })
+            end
+        else
+            Fluent:Notify({
+                Title = "Error",
+                Content = "Failed to find player: " .. displayName,
+                Duration = 5
+            })
+            warn("Player not found or invalid target.")
+        end
+    end
+})
