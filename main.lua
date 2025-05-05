@@ -306,61 +306,131 @@ TeleportsTab:CreateInput({
         })
     end
 })
-local AnimationPackages = {
-    ["Stylish Animation Package"] = {
-        idle = "rbxassetid://282574440",
-        walk = "rbxassetid://282574216",
-        run = "rbxassetid://282574034",
-        jump = "rbxassetid://282574585",
-        fall = "rbxassetid://282574512",
-        climb = "rbxassetid://282574752"
-    },
-    ["Weird Zombie Animation Package"] = {
-        idle = "rbxassetid://616158929",
-        walk = "rbxassetid://616168032",
-        run = "rbxassetid://616163682",
-        jump = "rbxassetid://616161998",
-        fall = "rbxassetid://616157476",
-        climb = "rbxassetid://616156119"
-    },
-    -- Add more packages here as needed
-}
+-- Scripts Tab
+local ScriptsTab = Window:CreateTab("Scripts", 4483362458)
 
-local AnimationsTab = Window:CreateTab("Animations", 4483362458)
+getgenv().bangSpeed = 1
 
-local SelectedPackage = nil
-
-AnimationsTab:CreateDropdown({
-    Name = "Choose Animation Package",
-    Options = table.getn(AnimationPackages) > 0 and (function()
-        local names = {}
-        for name, _ in pairs(AnimationPackages) do
-            table.insert(names, name)
+local function findPlayerByName(name)
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        if player.DisplayName:lower() == name:lower() then
+            return player
         end
-        return names
-    end)() or {"No Packages"},
-    CurrentOption = "Stylish Animation Package",
+    end
+    return nil
+end
+
+local function bang_plr_bypass(target)
+    if getgenv().bangScriptLoaded then
+        Fluent:Notify({
+            Title = "Failed",
+            Content = "Already loaded bang bypass!",
+            Duration = 5
+        })
+        return
+    end
+
+    getgenv().bangScriptLoaded = true
+    getgenv().enabled = true
+    getgenv().unload = false
+
+    local Players = game:GetService("Players")
+    local RunService = game:GetService("RunService")
+    local LocalPlayer = Players.LocalPlayer
+    local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local Humanoid = Character:WaitForChild("Humanoid")
+    local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+
+    local bangAnim = Instance.new("Animation")
+    bangAnim.AnimationId = "rbxassetid://5918726674"
+    local bang = Humanoid:LoadAnimation(bangAnim)
+    bang.Looped = true
+    bang:Play(0.1, 1, 1)
+
+    getgenv().bangAnimation = bang
+
+    getgenv().bangLoop = RunService.Stepped:Connect(function()
+        if getgenv().unload then
+            bang:Stop()
+            bangAnim:Destroy()
+            getgenv().bangScriptLoaded = false
+            return
+        end
+
+        if bang.Speed ~= getgenv().bangSpeed then
+            bang:AdjustSpeed(getgenv().bangSpeed)
+        end
+
+        if target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+            local targetRoot = target.Character:FindFirstChild("HumanoidRootPart")
+            HumanoidRootPart.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 1.1)
+        end
+    end)
+
+    getgenv().bangDied = Humanoid.Died:Connect(function()
+        bang:Stop()
+        bangAnim:Destroy()
+        getgenv().bangScriptLoaded = false
+    end)
+end
+
+local function bang_plr_bypass_off()
+    if getgenv().bangLoop then getgenv().bangLoop:Disconnect() end
+    if getgenv().bangDied then getgenv().bangDied:Disconnect() end
+
+    if getgenv().bangAnimation then
+        getgenv().bangAnimation:Stop()
+        getgenv().bangAnimation:Destroy()
+        getgenv().bangAnimation = nil
+    end
+
+    getgenv().bangScriptLoaded = false
+    getgenv().unload = nil
+    getgenv().enabled = false
+end
+
+ScriptsTab:CreateInput({
+    Name = "Bang Player",
+    PlaceholderText = "Enter Display Name",
+    RemoveTextAfterFocusLost = true,
+    Callback = function(displayName)
+        local targetPlayer = findPlayerByName(displayName)
+        if targetPlayer then
+            bang_plr_bypass(targetPlayer)
+            Fluent:Notify({
+                Title = "Notification",
+                Content = "Banging player: " .. displayName,
+                Duration = 5
+            })
+        else
+            Fluent:Notify({
+                Title = "Notification",
+                Content = "Player not found: " .. displayName,
+                Duration = 5
+            })
+        end
+    end
+})
+
+ScriptsTab:CreateSlider({
+    Name = "Bang Speed",
+    Range = {0.1, 20},
+    Increment = 0.1,
+    Suffix = "x",
+    Default = 1,
     Callback = function(Value)
-        SelectedPackage = AnimationPackages[Value]
-        if SelectedPackage then
-            local plr = game.Players.LocalPlayer
-            local animate = plr.Character and plr.Character:FindFirstChild("Animate")
-            if animate then
-                animate.idle.Animation1.AnimationId = SelectedPackage.idle
-                animate.idle.Animation2.AnimationId = SelectedPackage.idle
-                animate.walk.WalkAnim.AnimationId = SelectedPackage.walk
-                animate.run.RunAnim.AnimationId = SelectedPackage.run
-                animate.jump.JumpAnim.AnimationId = SelectedPackage.jump
-                animate.fall.FallAnim.AnimationId = SelectedPackage.fall
-                animate.climb.ClimbAnim.AnimationId = SelectedPackage.climb
+        getgenv().bangSpeed = Value
+    end
+})
 
-                -- Refresh character animations
-                plr.Character:BreakJoints()
-                task.wait()
-                plr:LoadCharacter()
-            else
-                warn("Animate script not found in character.")
-            end
-        end
+ScriptsTab:CreateButton({
+    Name = "Unbang",
+    Callback = function()
+        bang_plr_bypass_off()
+        Fluent:Notify({
+            Title = "Notification",
+            Content = "Stopped banging the player",
+            Duration = 5
+        })
     end
 })
