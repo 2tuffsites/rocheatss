@@ -59,7 +59,7 @@ local PlayerTab = Window:CreateTab("Player", 4483362458)
 
 PlayerTab:CreateSlider({
     Name = "Speed",
-    Range = {16, 500},
+    Range = {16, 300},
     Increment = 1,
     Suffix = "Speed",
     CurrentValue = 16,
@@ -74,7 +74,7 @@ PlayerTab:CreateSlider({
 
 PlayerTab:CreateSlider({
     Name = "Jump Power",
-    Range = {50, 500},
+    Range = {50, 300},
     Increment = 10,
     Suffix = "Jump",
     CurrentValue = 50,
