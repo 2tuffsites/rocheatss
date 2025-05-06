@@ -239,10 +239,19 @@ end,
 -- Teleports Tab
 local TeleportsTab = Window:CreateTab("Teleports", 4483362458)
 
--- Dropdown for Teleporting to Players
+-- Function to get DisplayNames
+local function getPlayerDisplayNames()
+    local names = {}
+    for _, p in ipairs(game.Players:GetPlayers()) do
+        table.insert(names, p.DisplayName)
+    end
+    return names
+end
+
+-- Create dropdown with initial placeholder (empty)
 local playerDropdown = TeleportsTab:CreateDropdown({
     Name = "Teleport to Player",
-    Options = {}, -- Will be filled manually
+    Options = {"Click to load players..."},
     Callback = function(selectedDisplayName)
         for _, player in ipairs(game.Players:GetPlayers()) do
             if player.DisplayName == selectedDisplayName then
@@ -271,36 +280,13 @@ local playerDropdown = TeleportsTab:CreateDropdown({
     end
 })
 
--- Function to manually build a player name list
-local function getPlayerDisplayNames()
-    local names = {}
-    for _, p in ipairs(game.Players:GetPlayers()) do
-        table.insert(names, p.DisplayName)
+-- Hook into dropdown opening event
+playerDropdown.MouseButton1Click:Connect(function()
+    -- Refresh player list when dropdown is clicked
+    local names = getPlayerDisplayNames()
+    if #names > 0 then
+        playerDropdown:SetOptions(names)
+    else
+        playerDropdown:SetOptions({"No players found"})
     end
-    return names
-end
-
--- Function to update dropdown options
-local function updatePlayerDropdown()
-    playerDropdown:SetOptions(getPlayerDisplayNames())
-end
-
--- Initial load
-updatePlayerDropdown()
-
--- Auto-refresh on player join/leave
-game.Players.PlayerAdded:Connect(updatePlayerDropdown)
-game.Players.PlayerRemoving:Connect(updatePlayerDropdown)
-
--- Optional manual refresh button
-TeleportsTab:CreateButton({
-    Name = "Refresh Player List",
-    Callback = function()
-        updatePlayerDropdown()
-        Rayfield:Notify({
-            Title = "Refreshed",
-            Content = "Player list updated.",
-            Duration = 3
-        })
-    end
-})
+end)
