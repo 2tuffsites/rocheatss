@@ -287,37 +287,48 @@ playerDropdown.MouseButton1Click:Connect(function()
     if #names > 0 then
         playerDropdown:SetOptions(names)
     else
-        playerDropdown:SetOptions({"No players found"})
-    end
-end)
 -- Flying Tab
 local FlyingTab = Window:CreateTab("Flying", 4483362458)
 
-local FlyToggle = FlyingTab:AddToggle("FlyToggle", 
-{
-    Title = "Fly", 
-    Description = "Lets you fly",
-    Default = false,
+-- Fly speed variable
+local flyingSpeed = 100  -- Default
+
+-- Toggle for flying
+FlyingTab:CreateToggle({
+    Name = "Enable Flight (F key)",
+    CurrentValue = false,
+    Flag = "FlightToggle",
     Callback = function(state)
+        FlyToggle.Value = state
         if state then
             startFlying()
         else
             stopFlying()
         end
-    end 
+    end,
 })
 
-local FlySpeedSlider = FlyingTab:AddSlider("FlySpeedSlider", {
-    Title = "Fly Speed",
-    Description = "Adjust the speed of flying",
-    Default = 10,
-    Min = 1,
-    Max = 50,
-    Rounding = 0,
-    Callback = function(Value)
-        speed = Value
-        if flying then
-            bodyVelocity.Velocity = bodyVelocity.Velocity.unit * speed
-        end
-    end
+-- Speed slider
+FlyingTab:CreateSlider({
+    Name = "Fly Speed",
+    Range = {1, 500},
+    Increment = 1,
+    Suffix = "Speed",
+    CurrentValue = flyingSpeed,
+    Flag = "FlySpeedSlider",
+    Callback = function(value)
+        flyingSpeed = value
+        speed = value  -- For your existing flight system
+    end,
+})
+
+-- Keybind for toggling flight
+FlyingTab:CreateKeybind({
+    Name = "Toggle Flight",
+    CurrentKeybind = "F",
+    HoldToInteract = false,
+    Flag = "FlightKeybind",
+    Callback = function()
+        FlyToggle:Set(not FlyToggle.Value)
+    end,
 })
