@@ -51,7 +51,7 @@ Note = "Enter key to continue",
 FileName = "KeySystem",
 SaveKey = true,
 GrabKeyFromSite = false,
-Key = {"lapolicia"}
+Key = {"lapolicias"}
 }
 })
 
