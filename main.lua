@@ -403,3 +403,95 @@ ScriptsTab:CreateButton({
         })
     end
 })
+-- Rayfield Setup
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+	Name = "2tuff Menu",
+	Icon = nil,
+	LoadingTitle = "fyi this ISNT a logger",
+	LoadingSubtitle = "by luc",
+	Theme = {
+		TextColor = Color3.fromRGB(0, 102, 204),
+		Background = Color3.fromRGB(255, 255, 255),
+		Topbar = Color3.fromRGB(255, 255, 255),
+		Shadow = Color3.fromRGB(200, 200, 200),
+		NotificationBackground = Color3.fromRGB(230, 230, 230),
+		NotificationActionsBackground = Color3.fromRGB(255, 255, 255),
+		TabBackground = Color3.fromRGB(220, 220, 220),
+		TabStroke = Color3.fromRGB(180, 180, 180),
+		TabBackgroundSelected = Color3.fromRGB(255, 255, 255),
+		TabTextColor = Color3.fromRGB(0, 102, 204),
+		SelectedTabTextColor = Color3.fromRGB(255, 255, 255),
+		ElementBackground = Color3.fromRGB(245, 245, 245),
+		ElementBackgroundHover = Color3.fromRGB(240, 240, 240),
+		SecondaryElementBackground = Color3.fromRGB(230, 230, 230),
+		ElementStroke = Color3.fromRGB(200, 200, 200),
+		SecondaryElementStroke = Color3.fromRGB(180, 180, 180),
+		SliderBackground = Color3.fromRGB(255, 255, 255),
+		SliderProgress = Color3.fromRGB(0, 102, 204),
+		SliderStroke = Color3.fromRGB(0, 102, 204),
+		ToggleBackground = Color3.fromRGB(240, 240, 240),
+		ToggleEnabled = Color3.fromRGB(0, 102, 204),
+		ToggleDisabled = Color3.fromRGB(180, 180, 180),
+		ToggleEnabledStroke = Color3.fromRGB(0, 102, 204),
+		ToggleDisabledStroke = Color3.fromRGB(150, 150, 150),
+		ToggleEnabledOuterStroke = Color3.fromRGB(0, 102, 204),
+		ToggleDisabledOuterStroke = Color3.fromRGB(120, 120, 120),
+		DropdownSelected = Color3.fromRGB(250, 250, 250),
+		DropdownUnselected = Color3.fromRGB(240, 240, 240),
+		InputBackground = Color3.fromRGB(255, 255, 255),
+		InputStroke = Color3.fromRGB(200, 200, 200),
+		PlaceholderColor = Color3.fromRGB(150, 150, 150)
+	},
+	ConfigurationSaving = {
+		Enabled = true,
+		FolderName = nil,
+		FileName = "2tuff cheats"
+	},
+	KeySystem = true,
+	KeySettings = {
+		Title = "2tuff cheats",
+		Subtitle = "Key System",
+		Note = "Enter key to continue",
+		FileName = "KeySystem",
+		SaveKey = true,
+		GrabKeyFromSite = false,
+		Key = {"lapolicia"}
+	}
+})
+
+-- Teleports Tab
+local TeleportsTab = Window:CreateTab("Teleports", 4483362458)
+
+TeleportsTab:CreateInput({
+	Name = "Teleport to Player",
+	PlaceholderText = "Enter player display name",
+	RemoveTextAfterFocusLost = true,
+	Callback = function(displayName)
+		local lowerInput = displayName:lower()
+		for _, player in ipairs(game.Players:GetPlayers()) do
+			if player.DisplayName:lower() == lowerInput then
+				local char = player.Character
+				local hrp = char and char:FindFirstChild("HumanoidRootPart")
+				if hrp then
+					local myHRP = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+					if myHRP then
+						myHRP.CFrame = hrp.CFrame
+						Rayfield:Notify({
+							Title = "Teleported!",
+							Content = "You were teleported to " .. player.DisplayName,
+							Duration = 5
+						})
+						return
+					end
+				end
+			end
+		end
+		Rayfield:Notify({
+			Title = "Teleport Failed",
+			Content = "Player not found or unavailable.",
+			Duration = 5
+		})
+	end
+})
