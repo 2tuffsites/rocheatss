@@ -237,44 +237,6 @@ MiscTab:CreateSlider({
     end,
 })
 
--- Teleports Tab
-local TeleportsTab = Window:CreateTab("Teleports", 4483362458)
-
-local TpDropdown = TeleportsTab:CreateDropdown({
-    Name = "Teleport Locations",
-    Options = {
-        "Spawn 1", "Spawn 2", "Spawn 3", "Circle Booth", "Avatar-UI", "Private Room (Inside)",
-        "Bathrooms", "Chill Spot", "Picnic", "Middle Room (Tent)", "Tower (Float Up Part)",
-        "Tower (Top)", "Tower (Highest Part)", "Donut Shop", "Above Relaxing Room", "Note Board"
-    },
-    CurrentOption = "Spawn 1",
-    Flag = "TpDropdown",
-    Callback = function(option)
-        local location = {
-            ["Spawn 1"] = CFrame.new(-0.0001, 5, 0.0001),
-            ["Spawn 2"] = CFrame.new(166.64, 5, 195.381),
-            ["Spawn 3"] = CFrame.new(143.6, 5, -33.09),
-            ["Circle Booth"] = CFrame.new(26.74, 7.81, 86.72),
-            ["Avatar-UI"] = CFrame.new(-129, 4.9, 82),
-            ["Private Room (Inside)"] = CFrame.new(4220.82, 2.77, 60.77),
-            ["Bathrooms"] = CFrame.new(-72.4, 5.1, 93.09),
-            ["Chill Spot"] = CFrame.new(229, 5.75, -21.56),
-            ["Picnic"] = CFrame.new(85.85, 3.61, -29.83),
-            ["Middle Room (Tent)"] = CFrame.new(70.95, 5.63, 24.3),
-            ["Tower (Float Up Part)"] = CFrame.new(61.33, 72.02, 215.73),
-            ["Tower (Top)"] = CFrame.new(63.23, 284.41, 193.53),
-            ["Tower (Highest Part)"] = CFrame.new(58.05, 313.31, 225.22),
-            ["Donut Shop"] = CFrame.new(-80.83, 3.17, -82.67),
-            ["Above Relaxing Room"] = CFrame.new(-97.44, 24.48, 121.39),
-            ["Note Board"] = CFrame.new(58.61, 5, 245.69)
-        }
-        local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-        if hrp and location[option] then
-            hrp.CFrame = location[option]
-        end
-    end
-})
-
 TeleportsTab:CreateInput({
     Name = "Teleport to Player",
     PlaceholderText = "Enter player display name",
