@@ -242,7 +242,7 @@ local TeleportsTab = Window:CreateTab("Teleports", 4483362458)
 -- Dropdown for Teleporting to Players
 local playerDropdown = TeleportsTab:CreateDropdown({
     Name = "Teleport to Player",
-    Options = {}, -- This will get updated on click
+    Options = {}, -- This will get updated
     Callback = function(selectedDisplayName)
         for _, player in ipairs(game.Players:GetPlayers()) do
             if player.DisplayName == selectedDisplayName then
@@ -271,14 +271,29 @@ local playerDropdown = TeleportsTab:CreateDropdown({
     end
 })
 
--- Update dropdown options when clicked
-playerDropdown:SetOptions(table.map(game.Players:GetPlayers(), function(p) return p.DisplayName end))
+-- Function to update dropdown options
+local function updatePlayerDropdown()
+    playerDropdown:SetOptions(table.map(game.Players:GetPlayers(), function(p)
+        return p.DisplayName
+    end))
+end
 
--- Optional: Refresh dropdown list whenever players join/leave
-game.Players.PlayerAdded:Connect(function()
-    playerDropdown:SetOptions(table.map(game.Players:GetPlayers(), function(p) return p.DisplayName end))
-end)
+-- Initial load
+updatePlayerDropdown()
 
-game.Players.PlayerRemoving:Connect(function()
-    playerDropdown:SetOptions(table.map(game.Players:GetPlayers(), function(p) return p.DisplayName end))
-end)
+-- Auto-refresh when players join/leave
+game.Players.PlayerAdded:Connect(updatePlayerDropdown)
+game.Players.PlayerRemoving:Connect(updatePlayerDropdown)
+
+-- Manual refresh button
+TeleportsTab:CreateButton({
+    Name = "Refresh Player List",
+    Callback = function()
+        updatePlayerDropdown()
+        Rayfield:Notify({
+            Title = "Refreshed",
+            Content = "Player list updated.",
+            Duration = 3
+        })
+    end
+})
