@@ -239,19 +239,17 @@ end,
 -- Teleports Tab
 local TeleportsTab = Window:CreateTab("Teleports", 4483362458)
 
-TeleportsTab:CreateInput({
+-- Dropdown for Teleporting to Players
+local playerDropdown = TeleportsTab:CreateDropdown({
     Name = "Teleport to Player",
-    PlaceholderText = "Enter player display name",
-    RemoveTextAfterFocusLost = true,
-    Callback = function(displayName)
-        local lowerInput = displayName:lower()
+    Options = {}, -- This will get updated on click
+    Callback = function(selectedDisplayName)
         for _, player in ipairs(game.Players:GetPlayers()) do
-            if player.DisplayName:lower() == lowerInput then
+            if player.DisplayName == selectedDisplayName then
                 local char = player.Character
                 local hrp = char and char:FindFirstChild("HumanoidRootPart")
                 if hrp then
-                    local myChar = game.Players.LocalPlayer.Character
-                    local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
+                    local myHRP = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
                     if myHRP then
                         myHRP.CFrame = hrp.CFrame
                         Rayfield:Notify({
@@ -272,3 +270,15 @@ TeleportsTab:CreateInput({
         })
     end
 })
+
+-- Update dropdown options when clicked
+playerDropdown:SetOptions(table.map(game.Players:GetPlayers(), function(p) return p.DisplayName end))
+
+-- Optional: Refresh dropdown list whenever players join/leave
+game.Players.PlayerAdded:Connect(function()
+    playerDropdown:SetOptions(table.map(game.Players:GetPlayers(), function(p) return p.DisplayName end))
+end)
+
+game.Players.PlayerRemoving:Connect(function()
+    playerDropdown:SetOptions(table.map(game.Players:GetPlayers(), function(p) return p.DisplayName end))
+end)
