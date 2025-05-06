@@ -242,7 +242,7 @@ local TeleportsTab = Window:CreateTab("Teleports", 4483362458)
 -- Dropdown for Teleporting to Players
 local playerDropdown = TeleportsTab:CreateDropdown({
     Name = "Teleport to Player",
-    Options = {}, -- This will get updated
+    Options = {}, -- Will be filled manually
     Callback = function(selectedDisplayName)
         for _, player in ipairs(game.Players:GetPlayers()) do
             if player.DisplayName == selectedDisplayName then
@@ -271,21 +271,28 @@ local playerDropdown = TeleportsTab:CreateDropdown({
     end
 })
 
+-- Function to manually build a player name list
+local function getPlayerDisplayNames()
+    local names = {}
+    for _, p in ipairs(game.Players:GetPlayers()) do
+        table.insert(names, p.DisplayName)
+    end
+    return names
+end
+
 -- Function to update dropdown options
 local function updatePlayerDropdown()
-    playerDropdown:SetOptions(table.map(game.Players:GetPlayers(), function(p)
-        return p.DisplayName
-    end))
+    playerDropdown:SetOptions(getPlayerDisplayNames())
 end
 
 -- Initial load
 updatePlayerDropdown()
 
--- Auto-refresh when players join/leave
+-- Auto-refresh on player join/leave
 game.Players.PlayerAdded:Connect(updatePlayerDropdown)
 game.Players.PlayerRemoving:Connect(updatePlayerDropdown)
 
--- Manual refresh button
+-- Optional manual refresh button
 TeleportsTab:CreateButton({
     Name = "Refresh Player List",
     Callback = function()
