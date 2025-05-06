@@ -155,7 +155,7 @@ Callback = function(Value)
 if Value then
 if not baseplate then
 baseplate = Instance.new("Part")
-baseplate.Size = Vector3.new(10000, 0, 10000)
+baseplate.Size = Vector3.new(20000, 0, 20000)
 baseplate.Anchored = true
 baseplate.Position = Vector3.new(0, 0, 0)
 baseplate.Color = selectedColor
