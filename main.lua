@@ -495,3 +495,85 @@ TeleportsTab:CreateInput({
 		})
 	end
 })
+local vc_service = game:GetService("VoiceChatService")
+local vc_internal = game:GetService("VoiceChatInternal")
+local userId = game.Players.LocalPlayer.UserId
+local retryCooldown = 3
+local UIS = game:GetService("UserInputService")
+
+local enabled_vc = vc_service:IsVoiceEnabledForUserIdAsync(userId)
+
+-- Voice Chat tab
+local VoiceChatTab = Window:CreateTab("Voice Chat", 4483362458)
+
+-- Auto VC Ban Protection (runs immediately)
+task.spawn(function()
+    if getgenv().voiceChat_Check then return end
+    getgenv().voiceChat_Check = true
+    local reconnecting = false
+
+    vc_internal.StateChanged:Connect(function(_, newState)
+        if newState == Enum.VoiceChatState.Ended and not reconnecting then
+            reconnecting = true
+            Fluent:Notify({
+                Title = "Voice Chat",
+                Content = "VC Ban Detected – Attempting Reconnect...",
+                Duration = 5
+            })
+
+            task.delay(retryCooldown, function()
+                local success, err = pcall(function()
+                    vc_service:joinVoice()
+                end)
+                if success then
+                    Fluent:Notify({
+                        Title = "Voice Chat",
+                        Content = "Rejoined Voice Chat Successfully",
+                        Duration = 5
+                    })
+                else
+                    warn("VC Rejoin Error:", err)
+                end
+                reconnecting = false
+            end)
+        end
+    end)
+end)
+
+-- Keybind UI Element (for visibility only)
+VoiceChatTab:AddParagraph("Press [Q] to manually rejoin VC", "Use this if you get banned and auto-reconnect hasn't triggered yet.")
+
+-- Q Keybind for manual VC rejoin
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.Q then
+        local success, err = pcall(function()
+            vc_service:joinVoice()
+        end)
+        if success then
+            Fluent:Notify({
+                Title = "Voice Chat",
+                Content = "Manually Rejoined VC (Q Key)",
+                Duration = 5
+            })
+        else
+            Fluent:Notify({
+                Title = "Voice Chat",
+                Content = "Manual VC Rejoin Failed",
+                Duration = 5
+            })
+            warn("Manual VC Rejoin Error:", err)
+        end
+    end
+end)
+
+-- Initial VC Join (if enabled)
+if enabled_vc then
+    pcall(function()
+        vc_service:joinVoice()
+    end)
+    Fluent:Notify({
+        Title = "Voice Chat",
+        Content = "Voice Chat Initialized",
+        Duration = 1
+    })
+end
