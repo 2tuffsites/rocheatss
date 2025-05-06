@@ -236,199 +236,39 @@ Callback = function(Value)
 spinSpeed = Value
 end,
 })
+-- Teleports Tab
+local TeleportsTab = Window:CreateTab("Teleports", 4483362458)
 
 TeleportsTab:CreateInput({
-Name = "Teleport to Player",
-PlaceholderText = "Enter player display name",
-RemoveTextAfterFocusLost = true,
-Callback = function(displayName)
-local lowerInput = displayName:lower()
-for _, player in ipairs(game.Players:GetPlayers()) do
-if player.DisplayName:lower() == lowerInput then
-local char = player.Character
-local hrp = char and char:FindFirstChild("HumanoidRootPart")
-if hrp then
-local myHRP = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-if myHRP then
-myHRP.CFrame = hrp.CFrame
-Rayfield:Notify({
-Title = "Teleported!",
-Content = "You were teleported to " .. player.DisplayName,
-Duration = 5
-})
-return
-end
-end
-end
-end
-Rayfield:Notify({
-Title = "Teleport Failed",
-Content = "Player not found or unavailable.",
-Duration = 5
-})
-end
-})
--- Scripts Tab
-local ScriptsTab = Window:CreateTab("Scripts", 4483362458)
-
-getgenv().bangSpeed = 1
-getgenv().bangScriptLoaded = false
-
-local UserInputService = game:GetService("UserInputService")
-
-local function getNearestPlayer()
-local closest, shortest = nil, math.huge
-local lp = game.Players.LocalPlayer
-local char = lp.Character
-if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-local hrp = char.HumanoidRootPart
-
-for _, player in ipairs(game.Players:GetPlayers()) do
-if player ~= lp and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-local dist = (hrp.Position - player.Character.HumanoidRootPart.Position).Magnitude
-if dist < shortest then
-shortest = dist
-closest = player
-end
-end
-end
-return closest
-end
-
-local function bang_plr_bypass(target)
-if getgenv().bangScriptLoaded then return end
-
-getgenv().bangScriptLoaded = true
-getgenv().unload = false
-
-local RunService = game:GetService("RunService")
-local lp = game.Players.LocalPlayer
-local char = lp.Character or lp.CharacterAdded:Wait()
-local hum = char:WaitForChild("Humanoid")
-local hrp = char:WaitForChild("HumanoidRootPart")
-
-local anim = Instance.new("Animation")
-anim.AnimationId = "rbxassetid://5918726674"
-local loadedAnim = hum:LoadAnimation(anim)
-loadedAnim.Looped = true
-loadedAnim:Play(0.1, 1, 1)
-
-getgenv().bangAnimation = loadedAnim
-
-getgenv().bangLoop = RunService.Stepped:Connect(function()
-if getgenv().unload or not target or not target.Character then return end
-if loadedAnim.Speed ~= getgenv().bangSpeed then
-loadedAnim:AdjustSpeed(getgenv().bangSpeed)
-end
-
-local targetHRP = target.Character:FindFirstChild("HumanoidRootPart")
-if targetHRP then
-hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 1.1)
-end
-end)
-
-getgenv().bangDied = hum.Died:Connect(function()
-loadedAnim:Stop()
-anim:Destroy()
-getgenv().bangScriptLoaded = false
-end)
-end
-
-local function bang_plr_bypass_off()
-if getgenv().bangLoop then getgenv().bangLoop:Disconnect() end
-if getgenv().bangDied then getgenv().bangDied:Disconnect() end
-
-if getgenv().bangAnimation then
-getgenv().bangAnimation:Stop()
-getgenv().bangAnimation:Destroy()
-getgenv().bangAnimation = nil
-end
-
-getgenv().bangScriptLoaded = false
-getgenv().unload = true
-end
-
--- Hotkey toggle (Z)
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-if gameProcessed then return end
-if input.KeyCode == Enum.KeyCode.Z then
-if getgenv().bangScriptLoaded then
-bang_plr_bypass_off()
-Fluent:Notify({
-Title = "Bang Player",
-Content = "Disabled bang on nearest player",
-Duration = 4
-})
-else
-local target = getNearestPlayer()
-if target then
-bang_plr_bypass(target)
-Fluent:Notify({
-Title = "Bang Player",
-Content = "Banging nearest player: " .. target.DisplayName,
-Duration = 4
-})
-else
-Fluent:Notify({
-Title = "Bang Player",
-Content = "No nearby players found!",
-Duration = 4
-})
-end
-end
-end
-end)
-
--- Slider
-ScriptsTab:CreateSlider({
-Name = "Bang Speed",
-Range = {0.1, 20},
-Increment = 0.1,
-Suffix = "x",
-Default = 1,
-Callback = function(Value)
-getgenv().bangSpeed = Value
-end
-})
--- Voice Chat Tab
-local VoiceTab = Window:CreateTab("Voice Chat", 4483362458)
-
-local function rejoinVC()
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
-
-    if not LocalPlayer then return end
-
-    -- VC Ban protection
-    local success, err = pcall(function()
-        if getsenv then
-            for _, v in pairs(getsenv(LocalPlayer.PlayerScripts:FindFirstChild("PlayerScripts")) or {}) do
-                if typeof(v) == "function" and islclosure(v) and debug.getinfo(v).name == "Rejoin" then
-                    v()
-                    return
+    Name = "Teleport to Player",
+    PlaceholderText = "Enter player display name",
+    RemoveTextAfterFocusLost = true,
+    Callback = function(displayName)
+        local lowerInput = displayName:lower()
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            if player.DisplayName:lower() == lowerInput then
+                local char = player.Character
+                local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    local myChar = game.Players.LocalPlayer.Character
+                    local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
+                    if myHRP then
+                        myHRP.CFrame = hrp.CFrame
+                        Rayfield:Notify({
+                            Title = "Teleported!",
+                            Content = "You were teleported to " .. player.DisplayName,
+                            Duration = 5
+                        })
+                        return
+                    end
                 end
             end
         end
-    end)
 
-    if not success then
-        LocalPlayer:Kick("Failed to rejoin VC: ".. tostring(err))
+        Rayfield:Notify({
+            Title = "Teleport Failed",
+            Content = "Player not found or unavailable.",
+            Duration = 5
+        })
     end
-end
-
-VoiceTab:CreateButton({
-    Name = "Rejoin VC",
-    Callback = function()
-        rejoinVC()
-    end,
 })
-
--- Q Keybind to rejoin VC
-local UserInputService = game:GetService("UserInputService")
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.Q then
-        rejoinVC()
-    end
-end)
