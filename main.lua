@@ -290,3 +290,34 @@ playerDropdown.MouseButton1Click:Connect(function()
         playerDropdown:SetOptions({"No players found"})
     end
 end)
+-- Flying Tab
+local FlyingTab = Window:CreateTab("Flying", 4483362458)
+
+local FlyToggle = FlyingTab:AddToggle("FlyToggle", 
+{
+    Title = "Fly", 
+    Description = "Lets you fly",
+    Default = false,
+    Callback = function(state)
+        if state then
+            startFlying()
+        else
+            stopFlying()
+        end
+    end 
+})
+
+local FlySpeedSlider = FlyingTab:AddSlider("FlySpeedSlider", {
+    Title = "Fly Speed",
+    Description = "Adjust the speed of flying",
+    Default = 10,
+    Min = 1,
+    Max = 50,
+    Rounding = 0,
+    Callback = function(Value)
+        speed = Value
+        if flying then
+            bodyVelocity.Velocity = bodyVelocity.Velocity.unit * speed
+        end
+    end
+})
