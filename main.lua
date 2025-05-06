@@ -100,7 +100,7 @@ PlayerTab:CreateButton({
     Name = "TP Tool",
     Callback = function()
         local Tool = Instance.new("Tool")
-        Tool.Name = "TP Tool"
+        Tool.Name = "Teleport Tool"
         Tool.RequiresHandle = false
         Tool.CanBeDropped = false
 
