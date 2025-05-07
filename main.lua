@@ -242,7 +242,7 @@ local InvisTab = Window:CreateTab("Invis", 4483362458) -- icon is a ghost
 InvisTab:CreateButton({
     Name = "Enable Invisibility",
     Callback = function()
-        if getgenv().Invis_Loaded and not getgenv().INVIS_DEBUG then
+        if getgenv().Invis_Loaded then
             return OrionLib:MakeNotification({
                 Name = "Invisibility",
                 Content = "Already enabled!",
@@ -250,130 +250,80 @@ InvisTab:CreateButton({
             })
         end
 
-        pcall(function() getgenv().Invis_Loaded = true end)
-
-        local Transparency = true
-        local Keybind = "R"
-        local NoClip = false
-        local CanInvis = true
-        local IsInvisible = false
+        getgenv().Invis_Loaded = true
 
         local Players = cloneref(game:GetService("Players"))
+        local UIS = game:GetService("UserInputService")
+        local RunService = game:GetService("RunService")
         local Player = Players.LocalPlayer
-        local RealCharacter = Player.Character or Player.CharacterAdded:Wait()
-        RealCharacter.Archivable = true
-        local FakeCharacter = RealCharacter:Clone()
+        local Camera = workspace.CurrentCamera
+        local Character = Player.Character or Player.CharacterAdded:Wait()
+        local Keybind = Enum.KeyCode.R
+        local IsInvisible = false
+        local PseudoAnchor
 
-        FakeCharacter.Parent = workspace
-        FakeCharacter.HumanoidRootPart.CFrame = RealCharacter.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+        -- Freeze clone
+        local function CreateFrozenClone()
+            local Clone = Character:Clone()
+            Clone.Parent = workspace
+            Clone:PivotTo(Character:GetPivot() * CFrame.new(0, 5, 0))
 
-        for _, v in pairs(RealCharacter:GetChildren()) do
-            if v:IsA("LocalScript") then
-                local clone = v:Clone()
-                clone.Disabled = true
-                clone.Parent = FakeCharacter
+            if Clone:FindFirstChild("Humanoid") then
+                Clone.Humanoid.PlatformStand = true
             end
+            if Clone:FindFirstChild("HumanoidRootPart") then
+                Clone.HumanoidRootPart.Anchored = true
+            end
+
+            for _, part in pairs(Clone:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.Anchored = true
+                    part.CanCollide = false
+                    part.Transparency = 0.5
+                end
+            end
+
+            return Clone
         end
 
-        if Transparency then
-            for _, v in pairs(FakeCharacter:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v.Transparency = 0.5
-                end
-            end
-        end
+        local CloneCharacter = CreateFrozenClone()
 
-        local function RealCharacterDied()
-            CanInvis = false
-            FakeCharacter:Destroy()
-            RealCharacter = Player.Character
-            RealCharacter.Archivable = true
-            FakeCharacter = RealCharacter:Clone()
+        local function toggleInvisibility()
+            if not Character or not CloneCharacter then return end
 
-            FakeCharacter.Parent = workspace
-            FakeCharacter.HumanoidRootPart.CFrame = RealCharacter.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+            IsInvisible = not IsInvisible
 
-            for _, v in pairs(RealCharacter:GetChildren()) do
-                if v:IsA("LocalScript") then
-                    local clone = v:Clone()
-                    clone.Disabled = true
-                    clone.Parent = FakeCharacter
-                end
-            end
-
-            if Transparency then
-                for _, v in pairs(FakeCharacter:GetDescendants()) do
-                    if v:IsA("BasePart") then
-                        v.Transparency = 0.5
-                    end
-                end
-            end
-
-            workspace.CurrentCamera.CameraSubject = RealCharacter:FindFirstChild("Humanoid")
-            CanInvis = true
-            IsInvisible = false
-        end
-
-        RealCharacter:WaitForChild("Humanoid").Died:Connect(function()
-            getgenv().Invis_Loaded = false
-            RealCharacter:Destroy()
-            FakeCharacter:Destroy()
-        end)
-
-        Player.CharacterAppearanceLoaded:Connect(RealCharacterDied)
-
-        local PseudoAnchor = FakeCharacter.HumanoidRootPart
-        game:GetService("RunService").RenderStepped:Connect(function()
-            if NoClip and IsInvisible then
-                FakeCharacter.Humanoid:ChangeState(11)
-            end
-        end)
-
-        local function Invisible()
-            if not IsInvisible then
-                local StoredCF = RealCharacter.HumanoidRootPart.CFrame
-                RealCharacter.HumanoidRootPart.CFrame = FakeCharacter.HumanoidRootPart.CFrame
-                FakeCharacter.HumanoidRootPart.CFrame = StoredCF
-
-                RealCharacter.Humanoid:UnequipTools()
-                Player.Character = FakeCharacter
-                workspace.CurrentCamera.CameraSubject = FakeCharacter.Humanoid
-                PseudoAnchor = RealCharacter.HumanoidRootPart
-
-                for _, v in pairs(FakeCharacter:GetChildren()) do
-                    if v:IsA("LocalScript") then
-                        v.Disabled = false
-                    end
-                end
-
-                IsInvisible = true
+            if IsInvisible then
+                -- Switch to clone
+                Player.Character = CloneCharacter
+                Camera.CameraSubject = CloneCharacter:FindFirstChildOfClass("Humanoid")
+                PseudoAnchor = Character:FindFirstChild("HumanoidRootPart")
             else
-                local StoredCF = FakeCharacter.HumanoidRootPart.CFrame
-                FakeCharacter.HumanoidRootPart.CFrame = RealCharacter.HumanoidRootPart.CFrame
-                RealCharacter.HumanoidRootPart.CFrame = StoredCF
-
-                FakeCharacter.Humanoid:UnequipTools()
-                Player.Character = RealCharacter
-                workspace.CurrentCamera.CameraSubject = RealCharacter.Humanoid
-                PseudoAnchor = FakeCharacter.HumanoidRootPart
-
-                for _, v in pairs(FakeCharacter:GetChildren()) do
-                    if v:IsA("LocalScript") then
-                        v.Disabled = true
-                    end
-                end
-
-                IsInvisible = false
+                -- Switch back
+                Player.Character = Character
+                Camera.CameraSubject = Character:FindFirstChildOfClass("Humanoid")
+                PseudoAnchor = CloneCharacter:FindFirstChild("HumanoidRootPart")
             end
         end
 
-        game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-            if gameProcessed then return end
-            if input.KeyCode == Enum.KeyCode.R and CanInvis and RealCharacter and FakeCharacter then
-                if RealCharacter:FindFirstChild("HumanoidRootPart") and FakeCharacter:FindFirstChild("HumanoidRootPart") then
-                    Invisible()
-                end
+        -- Follow anchor position to simulate standing still
+        RunService.RenderStepped:Connect(function()
+            if IsInvisible and PseudoAnchor and CloneCharacter and CloneCharacter:FindFirstChild("HumanoidRootPart") then
+                CloneCharacter.HumanoidRootPart.CFrame = PseudoAnchor.CFrame
             end
         end)
+
+        UIS.InputBegan:Connect(function(input, gameProcessed)
+            if gameProcessed then return end
+            if input.KeyCode == Keybind then
+                toggleInvisibility()
+            end
+        end)
+
+        OrionLib:MakeNotification({
+            Name = "Invisibility",
+            Content = "Press [R] to toggle invisibility.",
+            Time = 5
+        })
     end
 })
