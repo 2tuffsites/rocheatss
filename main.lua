@@ -264,15 +264,8 @@ InvisTab:CreateButton({
         RealCharacter.Archivable = true
         local FakeCharacter = RealCharacter:Clone()
 
-        local Part = Instance.new("Part", workspace)
-        Part.Anchored = true
-        Part.Size = Vector3.new(200, 1, 200)
-        Part.CFrame = CFrame.new(450, 10, 500)
-        Part.CanCollide = true
-        Part.Name = "TheBaseplate"
-
         FakeCharacter.Parent = workspace
-        FakeCharacter.HumanoidRootPart.CFrame = Part.CFrame * CFrame.new(0, 5, 0)
+        FakeCharacter.HumanoidRootPart.CFrame = RealCharacter.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
 
         for _, v in pairs(RealCharacter:GetChildren()) do
             if v:IsA("LocalScript") then
@@ -297,16 +290,8 @@ InvisTab:CreateButton({
             RealCharacter.Archivable = true
             FakeCharacter = RealCharacter:Clone()
 
-            Part:Destroy()
-            Part = Instance.new("Part", workspace)
-            Part.Anchored = true
-            Part.Size = Vector3.new(200, 1, 200)
-            Part.CFrame = CFrame.new(450, 10, 500)
-            Part.CanCollide = true
-            Part.Name = "Secondary Baseplate"
-
             FakeCharacter.Parent = workspace
-            FakeCharacter.HumanoidRootPart.CFrame = Part.CFrame * CFrame.new(0, 5, 0)
+            FakeCharacter.HumanoidRootPart.CFrame = RealCharacter.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
 
             for _, v in pairs(RealCharacter:GetChildren()) do
                 if v:IsA("LocalScript") then
@@ -339,9 +324,6 @@ InvisTab:CreateButton({
 
         local PseudoAnchor = FakeCharacter.HumanoidRootPart
         game:GetService("RunService").RenderStepped:Connect(function()
-            if IsInvisible and PseudoAnchor then
-                PseudoAnchor.CFrame = Part.CFrame * CFrame.new(0, 5, 0)
-            end
             if NoClip and IsInvisible then
                 FakeCharacter.Humanoid:ChangeState(11)
             end
