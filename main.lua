@@ -239,7 +239,6 @@ MiscTab:CreateSlider({
 	end,
 })
 local InvisTab = Window:CreateTab("Invis", 4483362458) -- icon is a ghost
-
 InvisTab:CreateButton({
     Name = "Enable Invisibility",
     Callback = function()
@@ -254,7 +253,7 @@ InvisTab:CreateButton({
         pcall(function() getgenv().Invis_Loaded = true end)
 
         local Transparency = true
-        local Keybind = "R" -- hardcoded keybind
+        local Keybind = "R"
         local NoClip = false
         local CanInvis = true
         local IsInvisible = false
@@ -325,12 +324,12 @@ InvisTab:CreateButton({
                 end
             end
 
-            workspace.CurrentCamera.CameraSubject = RealCharacter.Humanoid
+            workspace.CurrentCamera.CameraSubject = RealCharacter:FindFirstChild("Humanoid")
             CanInvis = true
             IsInvisible = false
         end
 
-        RealCharacter.Humanoid.Died:Connect(function()
+        RealCharacter:WaitForChild("Humanoid").Died:Connect(function()
             getgenv().Invis_Loaded = false
             RealCharacter:Destroy()
             FakeCharacter:Destroy()
@@ -340,10 +339,10 @@ InvisTab:CreateButton({
 
         local PseudoAnchor = FakeCharacter.HumanoidRootPart
         game:GetService("RunService").RenderStepped:Connect(function()
-            if PseudoAnchor then
+            if IsInvisible and PseudoAnchor then
                 PseudoAnchor.CFrame = Part.CFrame * CFrame.new(0, 5, 0)
             end
-            if NoClip then
+            if NoClip and IsInvisible then
                 FakeCharacter.Humanoid:ChangeState(11)
             end
         end)
@@ -388,7 +387,7 @@ InvisTab:CreateButton({
 
         game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
-            if input.KeyCode == Enum.KeyCode[Keybind:upper()] and CanInvis and RealCharacter and FakeCharacter then
+            if input.KeyCode == Enum.KeyCode.R and CanInvis and RealCharacter and FakeCharacter then
                 if RealCharacter:FindFirstChild("HumanoidRootPart") and FakeCharacter:FindFirstChild("HumanoidRootPart") then
                     Invisible()
                 end
