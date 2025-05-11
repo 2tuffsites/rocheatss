@@ -238,92 +238,70 @@ MiscTab:CreateSlider({
 		spinSpeed = Value
 	end,
 })
-local InvisTab = Window:CreateTab("Invis", 4483362458) -- icon is a ghost
-InvisTab:CreateButton({
-    Name = "Enable Invisibility",
-    Callback = function()
-        if getgenv().Invis_Loaded then
-            return OrionLib:MakeNotification({
-                Name = "Invisibility",
-                Content = "Already enabled!",
-                Time = 4
-            })
-        end
+-- Flight Variables
+local UIS = game:GetService("UserInputService")
+local flying = false
+local flightSpeed = 100
+local flyConnection = nil
+local flyBodyGyro, flyBodyVelocity = nil, nil
 
-        getgenv().Invis_Loaded = true
+local function startFly()
+	local plr = game.Players.LocalPlayer
+	local char = plr.Character
+	local hrp = char and char:FindFirstChild("HumanoidRootPart")
+	if not hrp then return end
 
-        local Players = cloneref(game:GetService("Players"))
-        local UIS = game:GetService("UserInputService")
-        local RunService = game:GetService("RunService")
-        local Player = Players.LocalPlayer
-        local Camera = workspace.CurrentCamera
-        local Character = Player.Character or Player.CharacterAdded:Wait()
-        local Keybind = Enum.KeyCode.R
-        local IsInvisible = false
-        local PseudoAnchor
+	flying = true
+	local cam = workspace.CurrentCamera
+	local direction = Vector3.zero
 
-        -- Freeze clone
-        local function CreateFrozenClone()
-            local Clone = Character:Clone()
-            Clone.Parent = workspace
-            Clone:PivotTo(Character:GetPivot() * CFrame.new(0, 5, 0))
+	flyBodyGyro = Instance.new("BodyGyro")
+	flyBodyGyro.P = 9e4
+	flyBodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+	flyBodyGyro.cframe = hrp.CFrame
+	flyBodyGyro.Parent = hrp
 
-            if Clone:FindFirstChild("Humanoid") then
-                Clone.Humanoid.PlatformStand = true
-            end
-            if Clone:FindFirstChild("HumanoidRootPart") then
-                Clone.HumanoidRootPart.Anchored = true
-            end
+	flyBodyVelocity = Instance.new("BodyVelocity")
+	flyBodyVelocity.velocity = Vector3.zero
+	flyBodyVelocity.maxForce = Vector3.new(9e9, 9e9, 9e9)
+	flyBodyVelocity.Parent = hrp
 
-            for _, part in pairs(Clone:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.Anchored = true
-                    part.CanCollide = false
-                    part.Transparency = 0.5
-                end
-            end
+	flyConnection = game:GetService("RunService").RenderStepped:Connect(function()
+		local moveDir = Vector3.zero
+		if UIS:IsKeyDown(Enum.KeyCode.W) then moveDir += cam.CFrame.LookVector end
+		if UIS:IsKeyDown(Enum.KeyCode.S) then moveDir -= cam.CFrame.LookVector end
+		if UIS:IsKeyDown(Enum.KeyCode.A) then moveDir -= cam.CFrame.RightVector end
+		if UIS:IsKeyDown(Enum.KeyCode.D) then moveDir += cam.CFrame.RightVector end
+		if UIS:IsKeyDown(Enum.KeyCode.Space) then moveDir += cam.CFrame.UpVector end
+		if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= cam.CFrame.UpVector end
 
-            return Clone
-        end
+		flyBodyGyro.CFrame = cam.CFrame
+		flyBodyVelocity.velocity = moveDir.Unit * flightSpeed
+	end)
+end
 
-        local CloneCharacter = CreateFrozenClone()
+local function stopFly()
+	flying = false
+	if flyConnection then flyConnection:Disconnect() flyConnection = nil end
+	if flyBodyGyro then flyBodyGyro:Destroy() flyBodyGyro = nil end
+	if flyBodyVelocity then flyBodyVelocity:Destroy() flyBodyVelocity = nil end
+end
 
-        local function toggleInvisibility()
-            if not Character or not CloneCharacter then return end
+UIS.InputBegan:Connect(function(input, gpe)
+	if not gpe and input.KeyCode == Enum.KeyCode.F then
+		if flying then stopFly() else startFly() end
+	end
+end)
 
-            IsInvisible = not IsInvisible
-
-            if IsInvisible then
-                -- Switch to clone
-                Player.Character = CloneCharacter
-                Camera.CameraSubject = CloneCharacter:FindFirstChildOfClass("Humanoid")
-                PseudoAnchor = Character:FindFirstChild("HumanoidRootPart")
-            else
-                -- Switch back
-                Player.Character = Character
-                Camera.CameraSubject = Character:FindFirstChildOfClass("Humanoid")
-                PseudoAnchor = CloneCharacter:FindFirstChild("HumanoidRootPart")
-            end
-        end
-
-        -- Follow anchor position to simulate standing still
-        RunService.RenderStepped:Connect(function()
-            if IsInvisible and PseudoAnchor and CloneCharacter and CloneCharacter:FindFirstChild("HumanoidRootPart") then
-                CloneCharacter.HumanoidRootPart.CFrame = PseudoAnchor.CFrame
-            end
-        end)
-
-        UIS.InputBegan:Connect(function(input, gameProcessed)
-            if gameProcessed then return end
-            if input.KeyCode == Keybind then
-                toggleInvisibility()
-            end
-        end)
-
-        OrionLib:MakeNotification({
-            Name = "Invisibility",
-            Content = "Press [R] to toggle invisibility.",
-            Time = 5
-        })
-    end
+-- Flight Speed Slider
+PlayerTab:CreateSlider({
+	Name = "Flight Speed",
+	Range = {1, 400},
+	Increment = 1,
+	Suffix = "Speed",
+	CurrentValue = 100,
+	Flag = "FlightSpeedSlider",
+	Callback = function(Value)
+		flightSpeed = Value
+	end,
 })
