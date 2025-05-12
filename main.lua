@@ -248,3 +248,67 @@ MiscTab:CreateButton({
 		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
 	end,
 })
+-- Fly Speed Slider
+local flySpeed = 20 -- Default fly speed
+
+PlayerTab:CreateSlider({
+	Name = "Fly Speed",
+	Range = {20, 500},
+	Increment = 5,
+	Suffix = "Speed",
+	CurrentValue = 20,
+	Flag = "FlySpeedSlider",
+	Callback = function(Value)
+		flySpeed = Value
+	end,
+})
+
+-- Fly Toggle Button
+local flying = false
+local flyConnection
+
+PlayerTab:CreateButton({
+	Name = "Toggle Fly",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		local char = player.Character or player.CharacterAdded:Wait()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+
+		if not flying then
+			flying = true
+			local bodyVelocity = Instance.new("BodyVelocity")
+			bodyVelocity.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+			bodyVelocity.Velocity = Vector3.zero
+			bodyVelocity.Parent = hrp
+
+			local uis = game:GetService("UserInputService")
+			local moveVec = Vector3.zero
+
+			flyConnection = game:GetService("RunService").Heartbeat:Connect(function()
+				if not flying then return end
+				hrp.Velocity = moveVec * flySpeed
+			end)
+
+			uis.InputBegan:Connect(function(input, processed)
+				if processed then return end
+				if input.KeyCode == Enum.KeyCode.W then moveVec = Vector3.new(0, 0, -1) end
+				if input.KeyCode == Enum.KeyCode.S then moveVec = Vector3.new(0, 0, 1) end
+				if input.KeyCode == Enum.KeyCode.A then moveVec = Vector3.new(-1, 0, 0) end
+				if input.KeyCode == Enum.KeyCode.D then moveVec = Vector3.new(1, 0, 0) end
+			end)
+
+			uis.InputEnded:Connect(function(input)
+				if input.KeyCode == Enum.KeyCode.W or input.KeyCode == Enum.KeyCode.S or
+				   input.KeyCode == Enum.KeyCode.A or input.KeyCode == Enum.KeyCode.D then
+					moveVec = Vector3.zero
+				end
+			end)
+		else
+			flying = false
+			if flyConnection then flyConnection:Disconnect() end
+			if hrp:FindFirstChild("BodyVelocity") then
+				hrp.BodyVelocity:Destroy()
+			end
+		end
+	end,
+})
