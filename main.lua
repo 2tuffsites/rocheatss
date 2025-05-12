@@ -72,7 +72,75 @@ PlayerTab:CreateSlider({
 		end
 	end,
 })
+al flying = false
+local flyConn
+local UIS = game:GetService("UserInputService")
 
+-- Fly Sp-- Fly system (WASD only)
+local flySpeed = 50
+loceed Slider
+PlayerTab:CreateSlider({
+	Name = "Fly Speed",
+	Range = {20, 500},
+	Increment = 5,
+	Suffix = "Speed",
+	CurrentValue = 50,
+	Flag = "FlySpeedSlider",
+	Callback = function(Value)
+		flySpeed = Value
+	end,
+})
+
+-- Toggle Fly Function
+local function toggleFly()
+	local plr = game.Players.LocalPlayer
+	local char = plr.Character or plr.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+
+	if not flying then
+		flying = true
+
+		local bv = Instance.new("BodyVelocity")
+		bv.Name = "FlyVelocity"
+		bv.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+		bv.Velocity = Vector3.zero
+		bv.Parent = hrp
+
+		local bg = Instance.new("BodyGyro")
+		bg.Name = "FlyGyro"
+		bg.MaxTorque = Vector3.new(1e9, 1e9, 1e9)
+		bg.CFrame = hrp.CFrame
+		bg.Parent = hrp
+
+		flyConn = game:GetService("RunService").RenderStepped:Connect(function()
+			local moveVec = Vector3.zero
+			local cam = workspace.CurrentCamera.CFrame
+
+			if UIS:IsKeyDown(Enum.KeyCode.W) then moveVec += cam.LookVector end
+			if UIS:IsKeyDown(Enum.KeyCode.S) then moveVec -= cam.LookVector end
+			if UIS:IsKeyDown(Enum.KeyCode.A) then moveVec -= cam.RightVector end
+			if UIS:IsKeyDown(Enum.KeyCode.D) then moveVec += cam.RightVector end
+
+			bv.Velocity = moveVec.Magnitude > 0 and moveVec.Unit * flySpeed or Vector3.zero
+			bg.CFrame = cam
+		end)
+	else
+		flying = false
+		if flyConn then flyConn:Disconnect() end
+		local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+		if hrp then
+			if hrp:FindFirstChild("FlyVelocity") then hrp.FlyVelocity:Destroy() end
+			if hrp:FindFirstChild("FlyGyro") then hrp.FlyGyro:Destroy() end
+		end
+	end
+end
+
+-- Bind to F key
+UIS.InputBegan:Connect(function(input, processed)
+	if not processed and input.KeyCode == Enum.KeyCode.F then
+		toggleFly()
+	end
+end)
 PlayerTab:CreateSlider({
 	Name = "Jump Power",
 	Range = {50, 300},
@@ -248,72 +316,3 @@ MiscTab:CreateButton({
 		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
 	end,
 })
--- Fly system (WASD only)
-local flySpeed = 50
-local flying = false
-local flyConn
-local UIS = game:GetService("UserInputService")
-
--- Fly Speed Slider
-PlayerTab:CreateSlider({
-	Name = "Fly Speed",
-	Range = {20, 500},
-	Increment = 5,
-	Suffix = "Speed",
-	CurrentValue = 50,
-	Flag = "FlySpeedSlider",
-	Callback = function(Value)
-		flySpeed = Value
-	end,
-})
-
--- Toggle Fly Function
-local function toggleFly()
-	local plr = game.Players.LocalPlayer
-	local char = plr.Character or plr.CharacterAdded:Wait()
-	local hrp = char:WaitForChild("HumanoidRootPart")
-
-	if not flying then
-		flying = true
-
-		local bv = Instance.new("BodyVelocity")
-		bv.Name = "FlyVelocity"
-		bv.MaxForce = Vector3.new(1e9, 1e9, 1e9)
-		bv.Velocity = Vector3.zero
-		bv.Parent = hrp
-
-		local bg = Instance.new("BodyGyro")
-		bg.Name = "FlyGyro"
-		bg.MaxTorque = Vector3.new(1e9, 1e9, 1e9)
-		bg.CFrame = hrp.CFrame
-		bg.Parent = hrp
-
-		flyConn = game:GetService("RunService").RenderStepped:Connect(function()
-			local moveVec = Vector3.zero
-			local cam = workspace.CurrentCamera.CFrame
-
-			if UIS:IsKeyDown(Enum.KeyCode.W) then moveVec += cam.LookVector end
-			if UIS:IsKeyDown(Enum.KeyCode.S) then moveVec -= cam.LookVector end
-			if UIS:IsKeyDown(Enum.KeyCode.A) then moveVec -= cam.RightVector end
-			if UIS:IsKeyDown(Enum.KeyCode.D) then moveVec += cam.RightVector end
-
-			bv.Velocity = moveVec.Magnitude > 0 and moveVec.Unit * flySpeed or Vector3.zero
-			bg.CFrame = cam
-		end)
-	else
-		flying = false
-		if flyConn then flyConn:Disconnect() end
-		local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-		if hrp then
-			if hrp:FindFirstChild("FlyVelocity") then hrp.FlyVelocity:Destroy() end
-			if hrp:FindFirstChild("FlyGyro") then hrp.FlyGyro:Destroy() end
-		end
-	end
-end
-
--- Bind to F key
-UIS.InputBegan:Connect(function(input, processed)
-	if not processed and input.KeyCode == Enum.KeyCode.F then
-		toggleFly()
-	end
-end)
