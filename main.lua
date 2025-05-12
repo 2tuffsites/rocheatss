@@ -71,13 +71,14 @@ PlayerTab:CreateSlider({
 		end
 	end,
 })
-al flying = false
+
+local flying = false
 local flyConn
 local UIS = game:GetService("UserInputService")
 
--- Fly Sp-- Fly system (WASD only)
+-- Fly system (WASD only)
 local flySpeed = 50
-loceed Slider
+
 PlayerTab:CreateSlider({
 	Name = "Fly Speed",
 	Range = {20, 500},
@@ -134,12 +135,12 @@ local function toggleFly()
 	end
 end
 
--- Bind to F key
 UIS.InputBegan:Connect(function(input, processed)
 	if not processed and input.KeyCode == Enum.KeyCode.F then
 		toggleFly()
 	end
 end)
+
 PlayerTab:CreateSlider({
 	Name = "Jump Power",
 	Range = {50, 300},
@@ -305,6 +306,7 @@ MiscTab:CreateSlider({
 		spinSpeed = Value
 	end,
 })
+
 MiscTab:CreateButton({
 	Name = "Rejoin Server",
 	Callback = function()
