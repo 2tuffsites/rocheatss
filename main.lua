@@ -317,3 +317,73 @@ MiscTab:CreateButton({
 		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
 	end,
 })
+-- Create new Invis tab
+local InvisTab = Window:CreateTab("Invis", 4483362458)
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local lp = Players.LocalPlayer
+local invisible = false
+local storedParts = {}
+
+-- Invisibility logic
+local function toggleInvisibility()
+	local char = lp.Character or lp.CharacterAdded:Wait()
+	if not char then return end
+
+	if not invisible then
+		invisible = true
+		storedParts = {}
+
+		for _, part in ipairs(char:GetDescendants()) do
+			if part:IsA("Accessory") then
+				part:Destroy()
+			elseif part:IsA("BasePart") then
+				storedParts[part] = part.Transparency
+				part.Transparency = 1
+				if part:FindFirstChildOfClass("Decal") then
+					for _, d in ipairs(part:GetChildren()) do
+						if d:IsA("Decal") then
+							d.Transparency = 1
+						end
+					end
+				end
+			elseif part:IsA("Decal") then
+				storedParts[part] = part.Transparency
+				part.Transparency = 1
+			end
+		end
+
+		for _, obj in ipairs(char:GetChildren()) do
+			if obj:IsA("Shirt") or obj:IsA("Pants") or obj:IsA("ShirtGraphic") then
+				obj:Destroy()
+			end
+		end
+	else
+		invisible = false
+		for part, originalTransparency in pairs(storedParts) do
+			if part and part:IsA("BasePart") then
+				part.Transparency = originalTransparency
+			elseif part and part:IsA("Decal") then
+				part.Transparency = originalTransparency
+			end
+		end
+	end
+end
+
+-- Add UI Toggle to Invis tab
+InvisTab:CreateToggle({
+	Name = "Invisibility (Server-Side + WASD)",
+	CurrentValue = false,
+	Flag = "ServerInvisToggle",
+	Callback = function(state)
+		toggleInvisibility()
+	end,
+})
+
+-- Q Keybind to toggle invis
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if not gameProcessed and input.KeyCode == Enum.KeyCode.Q then
+		toggleInvisibility()
+	end
+end)
