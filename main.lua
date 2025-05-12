@@ -248,9 +248,13 @@ MiscTab:CreateButton({
 		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
 	end,
 })
--- Fly Speed Slider
-local flySpeed = 20 -- Default fly speed
+-- Fly System (Keybind Toggle + Speed Slider)
+local flying = false
+local flySpeed = 20
+local flyKey = Enum.KeyCode.F
+local flyConnection
 
+-- Speed slider
 PlayerTab:CreateSlider({
 	Name = "Fly Speed",
 	Range = {20, 500},
@@ -263,52 +267,65 @@ PlayerTab:CreateSlider({
 	end,
 })
 
--- Fly Toggle Button
-local flying = false
-local flyConnection
-
-PlayerTab:CreateButton({
-	Name = "Toggle Fly",
-	Callback = function()
-		local player = game.Players.LocalPlayer
-		local char = player.Character or player.CharacterAdded:Wait()
-		local hrp = char:WaitForChild("HumanoidRootPart")
-
-		if not flying then
-			flying = true
-			local bodyVelocity = Instance.new("BodyVelocity")
-			bodyVelocity.MaxForce = Vector3.new(1e5, 1e5, 1e5)
-			bodyVelocity.Velocity = Vector3.zero
-			bodyVelocity.Parent = hrp
-
-			local uis = game:GetService("UserInputService")
-			local moveVec = Vector3.zero
-
-			flyConnection = game:GetService("RunService").Heartbeat:Connect(function()
-				if not flying then return end
-				hrp.Velocity = moveVec * flySpeed
-			end)
-
-			uis.InputBegan:Connect(function(input, processed)
-				if processed then return end
-				if input.KeyCode == Enum.KeyCode.W then moveVec = Vector3.new(0, 0, -1) end
-				if input.KeyCode == Enum.KeyCode.S then moveVec = Vector3.new(0, 0, 1) end
-				if input.KeyCode == Enum.KeyCode.A then moveVec = Vector3.new(-1, 0, 0) end
-				if input.KeyCode == Enum.KeyCode.D then moveVec = Vector3.new(1, 0, 0) end
-			end)
-
-			uis.InputEnded:Connect(function(input)
-				if input.KeyCode == Enum.KeyCode.W or input.KeyCode == Enum.KeyCode.S or
-				   input.KeyCode == Enum.KeyCode.A or input.KeyCode == Enum.KeyCode.D then
-					moveVec = Vector3.zero
-				end
-			end)
-		else
-			flying = false
-			if flyConnection then flyConnection:Disconnect() end
-			if hrp:FindFirstChild("BodyVelocity") then
-				hrp.BodyVelocity:Destroy()
-			end
-		end
+-- Keybind selector
+PlayerTab:CreateKeybind({
+	Name = "Fly Toggle Key",
+	CurrentKeybind = flyKey,
+	Flag = "FlyKeybind",
+	Callback = function(Key)
+		flyKey = Key
 	end,
 })
+
+-- Fly logic
+local function toggleFly()
+	local player = game.Players.LocalPlayer
+	local char = player.Character or player.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+
+	if not flying then
+		flying = true
+		local bodyVelocity = Instance.new("BodyVelocity")
+		bodyVelocity.Name = "FlyVelocity"
+		bodyVelocity.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+		bodyVelocity.Velocity = Vector3.zero
+		bodyVelocity.Parent = hrp
+
+		local moveVec = Vector3.zero
+		local uis = game:GetService("UserInputService")
+
+		flyConnection = game:GetService("RunService").Heartbeat:Connect(function()
+			if flying then
+				hrp.Velocity = moveVec * flySpeed
+			end
+		end)
+
+		uis.InputBegan:Connect(function(input, processed)
+			if processed then return end
+			if input.KeyCode == Enum.KeyCode.W then moveVec = Vector3.new(0, 0, -1) end
+			if input.KeyCode == Enum.KeyCode.S then moveVec = Vector3.new(0, 0, 1) end
+			if input.KeyCode == Enum.KeyCode.A then moveVec = Vector3.new(-1, 0, 0) end
+			if input.KeyCode == Enum.KeyCode.D then moveVec = Vector3.new(1, 0, 0) end
+		end)
+
+		uis.InputEnded:Connect(function(input)
+			if input.KeyCode == Enum.KeyCode.W or input.KeyCode == Enum.KeyCode.S or
+			   input.KeyCode == Enum.KeyCode.A or input.KeyCode == Enum.KeyCode.D then
+				moveVec = Vector3.zero
+			end
+		end)
+	else
+		flying = false
+		if flyConnection then flyConnection:Disconnect() end
+		if hrp:FindFirstChild("FlyVelocity") then
+			hrp.FlyVelocity:Destroy()
+		end
+	end
+end
+
+-- Bind toggle to keypress
+game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
+	if not processed and input.KeyCode == flyKey then
+		toggleFly()
+	end
+end)
