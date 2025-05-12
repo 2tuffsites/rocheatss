@@ -238,3 +238,13 @@ MiscTab:CreateSlider({
 		spinSpeed = Value
 	end,
 })
+MiscTab:CreateButton({
+	Name = "Rejoin Server",
+	Callback = function()
+		local TeleportService = game:GetService("TeleportService")
+		local Players = game:GetService("Players")
+		local LocalPlayer = Players.LocalPlayer
+
+		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+	end,
+})
