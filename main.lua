@@ -81,7 +81,7 @@ local flySpeed = 50
 
 PlayerTab:CreateSlider({
 	Name = "Fly Speed",
-	Range = {20, 500},
+	Range = {20, 1000},
 	Increment = 5,
 	Suffix = "Speed",
 	CurrentValue = 50,
