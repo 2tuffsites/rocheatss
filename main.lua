@@ -322,57 +322,50 @@ local InvisTab = Window:CreateTab("Invis", 4483362458)
 InvisTab:CreateParagraph({
 	Title = "Invisibility",
 	Content = "Press Q to toggle server-side invisibility. Others cannot see you."
-})
 local UIS = game:GetService("UserInputService")
-local Players = game:GetService("Players")
-local lp = Players.LocalPlayer
-local invis = false
-local originalProps = {}
+local lp = game.Players.LocalPlayer
+local char = lp.Character or lp.CharacterAdded:Wait()
 
-local function setVisibility(char, state)
-	for _, obj in ipairs(char:GetDescendants()) do
-		if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then
-			if not originalProps[obj] then
-				originalProps[obj] = {
-					Transparency = obj.Transparency,
-					CanCollide = obj.CanCollide,
-					Material = obj.Material
+local invis = false
+local storedParts = {}
+
+local function toggleInvis(state)
+	local character = lp.Character
+	if not character then return end
+
+	for _, part in ipairs(character:GetDescendants()) do
+		if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+			if state == true then
+				storedParts[part] = {
+					Transparency = part.Transparency,
+					Parent = part.Parent
 				}
+				part:Destroy() -- server-side removal
+			elseif storedParts[part] then
+				local newPart = Instance.new("Part")
+				newPart.Name = part.Name
+				newPart.Size = part.Size
+				newPart.CFrame = character.HumanoidRootPart.CFrame
+				newPart.Anchored = false
+				newPart.CanCollide = false
+				newPart.Transparency = 0.7
+				newPart.Material = Enum.Material.ForceField
+				newPart.Parent = storedParts[part].Parent
 			end
-			if state == "invis" then
-				obj.Transparency = 1
-				obj.CanCollide = false
-				obj.Material = Enum.Material.SmoothPlastic
-			elseif state == "vis" and originalProps[obj] then
-				obj.Transparency = originalProps[obj].Transparency
-				obj.CanCollide = originalProps[obj].CanCollide
-				obj.Material = originalProps[obj].Material
-			end
-		elseif obj:IsA("Decal") then
-			if state == "invis" then
-				obj.Transparency = 1
-			elseif state == "vis" then
-				obj.Transparency = 0
-			end
+		elseif part:IsA("Decal") and state == true then
+			part:Destroy()
 		end
 	end
 
-	local head = char:FindFirstChild("Head")
-	if head and head:FindFirstChild("face") then
-		head.face.Transparency = (state == "invis" and 1 or 0)
-	end
+	invis = state
 end
 
 UIS.InputBegan:Connect(function(input, gpe)
 	if gpe or input.KeyCode ~= Enum.KeyCode.Q then return end
-	local char = lp.Character
-	if not char then return end
-
 	if invis == false then
-		setVisibility(char, "invis")
-		invis = true
+		toggleInvis(true)
 	else
-		setVisibility(char, "vis")
+		lp:LoadCharacter() -- clean full restore
 		invis = false
 	end
 end)
