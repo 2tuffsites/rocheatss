@@ -317,73 +317,62 @@ MiscTab:CreateButton({
 		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
 	end,
 })
--- Create new Invis tab
 local InvisTab = Window:CreateTab("Invis", 4483362458)
 
+InvisTab:CreateParagraph({
+	Title = "Invisibility",
+	Content = "Press Q to toggle server-side invisibility. Others cannot see you."
+})
+local UIS = game:GetService("UserInputService")
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
 local lp = Players.LocalPlayer
-local invisible = false
-local storedParts = {}
+local invis = false
+local originalProps = {}
 
--- Invisibility logic
-local function toggleInvisibility()
-	local char = lp.Character or lp.CharacterAdded:Wait()
-	if not char then return end
-
-	if not invisible then
-		invisible = true
-		storedParts = {}
-
-		for _, part in ipairs(char:GetDescendants()) do
-			if part:IsA("Accessory") then
-				part:Destroy()
-			elseif part:IsA("BasePart") then
-				storedParts[part] = part.Transparency
-				part.Transparency = 1
-				if part:FindFirstChildOfClass("Decal") then
-					for _, d in ipairs(part:GetChildren()) do
-						if d:IsA("Decal") then
-							d.Transparency = 1
-						end
-					end
-				end
-			elseif part:IsA("Decal") then
-				storedParts[part] = part.Transparency
-				part.Transparency = 1
+local function setVisibility(char, state)
+	for _, obj in ipairs(char:GetDescendants()) do
+		if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then
+			if not originalProps[obj] then
+				originalProps[obj] = {
+					Transparency = obj.Transparency,
+					CanCollide = obj.CanCollide,
+					Material = obj.Material
+				}
 			end
-		end
-
-		for _, obj in ipairs(char:GetChildren()) do
-			if obj:IsA("Shirt") or obj:IsA("Pants") or obj:IsA("ShirtGraphic") then
-				obj:Destroy()
+			if state == "invis" then
+				obj.Transparency = 1
+				obj.CanCollide = false
+				obj.Material = Enum.Material.SmoothPlastic
+			elseif state == "vis" and originalProps[obj] then
+				obj.Transparency = originalProps[obj].Transparency
+				obj.CanCollide = originalProps[obj].CanCollide
+				obj.Material = originalProps[obj].Material
 			end
-		end
-	else
-		invisible = false
-		for part, originalTransparency in pairs(storedParts) do
-			if part and part:IsA("BasePart") then
-				part.Transparency = originalTransparency
-			elseif part and part:IsA("Decal") then
-				part.Transparency = originalTransparency
+		elseif obj:IsA("Decal") then
+			if state == "invis" then
+				obj.Transparency = 1
+			elseif state == "vis" then
+				obj.Transparency = 0
 			end
 		end
 	end
+
+	local head = char:FindFirstChild("Head")
+	if head and head:FindFirstChild("face") then
+		head.face.Transparency = (state == "invis" and 1 or 0)
+	end
 end
 
--- Add UI Toggle to Invis tab
-InvisTab:CreateToggle({
-	Name = "Invisibility (Server-Side + WASD)",
-	CurrentValue = false,
-	Flag = "ServerInvisToggle",
-	Callback = function(state)
-		toggleInvisibility()
-	end,
-})
+UIS.InputBegan:Connect(function(input, gpe)
+	if gpe or input.KeyCode ~= Enum.KeyCode.Q then return end
+	local char = lp.Character
+	if not char then return end
 
--- Q Keybind to toggle invis
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-	if not gameProcessed and input.KeyCode == Enum.KeyCode.Q then
-		toggleInvisibility()
+	if invis == false then
+		setVisibility(char, "invis")
+		invis = true
+	else
+		setVisibility(char, "vis")
+		invis = false
 	end
 end)
