@@ -317,3 +317,76 @@ MiscTab:CreateButton({
 		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
 	end,
 })
+local UIS = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
+
+local headSitActive = false
+local headSitConnection
+local targetPlayer
+
+local function startHeadSit(target)
+    local character = lp.Character
+    if not character then return end
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    local targetChar = target.Character
+    if not hrp or not targetChar then return end
+    local targetHead = targetChar:FindFirstChild("Head")
+    if not targetHead then return end
+
+    -- Weld local player HRP to target player's head
+    local weld = Instance.new("WeldConstraint")
+    weld.Part0 = hrp
+    weld.Part1 = targetHead
+    weld.Parent = hrp
+
+    -- Keep the weld updated if target moves (optional, but safer)
+    headSitConnection = game:GetService("RunService").RenderStepped:Connect(function()
+        if not weld or not weld.Parent then
+            headSitConnection:Disconnect()
+            return
+        end
+    end)
+
+    headSitActive = true
+end
+
+local function stopHeadSit()
+    local character = lp.Character
+    if not character then return end
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+
+    -- Remove all weld constraints from HRP
+    for _, weld in ipairs(hrp:GetChildren()) do
+        if weld:IsA("WeldConstraint") then
+            weld:Destroy()
+        end
+    end
+
+    if headSitConnection then
+        headSitConnection:Disconnect()
+        headSitConnection = nil
+    end
+
+    headSitActive = false
+end
+
+UIS.InputBegan:Connect(function(input, gpe)
+    if gpe or (input.KeyCode ~= Enum.KeyCode.H) then return end
+
+    if not headSitActive then
+        -- Pick the first player that's NOT you
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= lp then
+                targetPlayer = plr
+                break
+            end
+        end
+        if targetPlayer then
+            startHeadSit(targetPlayer)
+        end
+    else
+        stopHeadSit()
+    end
+end)
